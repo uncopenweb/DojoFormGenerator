@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <title>Dojo Form Generator</title>
+    <style type="text/css">
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dojo/resources/dojo.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/tundra/tundra.css";
+
+      .uncFormGenerator fieldset {
+        margin-left: 6em;
+        margin-bottom: 1em;
+        padding: 1em 3em 1em 1em;
+        border: 1px solid black;
+        display: inline-block;
+        position: relative;
+      }
+      .uncFormGenerator legend {
+        font-weight: bold;
+        padding: 0 2px;
+      }
+      .uncFormGenerator label {
+        text-align: right;
+        width: 6em;
+        padding-right: 1em;
+        display: block;
+        float: left;
+        margin-bottom: 10px;
+        font-weight: bold;
+       }
+      .uncFormGenerator .dijitTextArea {
+        width: 30em;
+        margin-bottom: 10px;
+      }
+      .uncFormGenerator .RichTextEditable {
+        width: 50em;
+        margin-bottom: 10px;
+        margin-left: 7em;
+      }
+      .uncFormGenerator .description {
+        width: 40em;
+        margin-top: 0;
+      }
+      .uncFormGenerator label ~ .description {
+        margin-left: 7em;
+      }
+      .uncFormGenerator .dijitButton {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+      }
+    </style>
+
+    <script type="text/javascript">
+        var djConfig = {
+            isDebug: false,
+            parseOnLoad: true,
+            baseUrl: './',
+            // map local widget namespaces -> paths relative to baseUrl
+            modulePaths: {'unc' : '.'}
+        };
+    </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dojo/dojo.xd.js"></script>
+    <script type="text/javascript" src="SpellBinderSchema.js"></script>
+    <script type="text/javascript" src="SpellBinderData.js"></script>
+    <script type="text/javascript">
+      // include any modules needed for the initial Dojo markup parse here
+      // or at the top of your JS file; take it out if you don't need it
+      dojo.require('unc.FormGenerator');
+    </script>
+  </head>
+  <body class="tundra">
+    <div dojoType="unc.FormGenerator" schema="SpellBinderSchema", initValue="SpellBinderData" jsID="myform"></div>
+  </body>
+</html>
+
+ 
