@@ -25,6 +25,7 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
             var b = new dijit.form.Button({label:'-'});
             dojo.place(b.domNode, this.containerNode);
         }
+        last.attr('disabled', true);
         this.connect(this.add, 'onClick', 'addItem');
     },
 
