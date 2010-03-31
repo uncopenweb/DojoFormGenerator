@@ -8,12 +8,17 @@
       @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/tundra/tundra.css";
 
       .uncFormGenerator fieldset {
-        margin-left: 6em;
         margin-bottom: 1em;
         padding: 1em 3em 1em 1em;
         border: 1px solid black;
         display: inline-block;
         position: relative;
+      }
+      .uncFormGenerator .topLevel fieldset {
+        margin-left: 1em;
+      }
+      .uncFormGenerator .nestedLevel fieldset {
+        margin-left: 6em;
       }
       .uncFormGenerator legend {
         font-weight: bold;
@@ -32,6 +37,9 @@
         width: 30em;
         margin-bottom: 10px;
       }
+      .uncFormGenerator .dijitTextAreaDisabled {
+        background: url("images/buttonDisabled.png") repeat-x scroll left top #FFF;
+      }
       .uncFormGenerator .RichTextEditable {
         width: 50em;
         margin-bottom: 10px;
@@ -43,11 +51,6 @@
       }
       .uncFormGenerator label ~ .description {
         margin-left: 7em;
-      }
-      .uncFormGenerator .dijitButton {
-        position: absolute;
-        right: 0px;
-        bottom: 0px;
       }
     </style>
 

@@ -5,6 +5,7 @@
 
 var SpellBinderSchema = {
     "title":"SpellBinder",
+    "description":"This form allows you to create new and edit existing instances of the SpellBinder activity.",
     "type":"object",
     "properties":{
 	"models":{

@@ -5,6 +5,8 @@ dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.Editor');
+dojo.require('unc.ArrayManager');
+dojo.require('unc.ObjectManager');
 
 dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
     schema: {}, // object describing the JSON schema for the object this form is to edit,
@@ -13,42 +15,45 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
     startup: function() {
         this.inherited(arguments);
 
-        this.generate_object(this.schema.title || '', this.schema, this.initValue, 
+        var w = this.generate_object(this.schema.title || '', this.schema, this.initValue, 
                              this.containerNode, true);
         dojo.addClass(this.containerNode, 'uncFormGenerator');
     },
 
     generate: function(name, schema, value, parentNode) {
+        //console.log('generate', name, schema, value, parentNode);
         var type = schema.type;
         var method = 'generate_' + type;
         if (method in this) {
-            this[method](name, schema, value, parentNode);
+            return this[method](name, schema, value, parentNode);
         } else {
             console.log('no method', method);
         }
     },
 
     generate_object: function(name, schema, value, parentNode, topLevel) {
-        console.log('generate_object', name, schema, value, parentNode);
+        //console.log('generate_object', name, schema, value, parentNode);
         var title = schema.title || name;
-        var node;
-        if (!topLevel) {
-            node = dojo.create('fieldset', null, parentNode);
-            dojo.create('legend', {innerHTML: title}, node);
+        var n = new unc.ObjectManager({
+            name: name,
+            title: title,
+            generator: dojo.hitch(this, 'generate'),
+            schema: schema,
+            init: value,
+            description: schema.description || ''
+        });
+        if (topLevel) {
+            dojo.addClass(n.domNode, 'topLevel');
         } else {
-            node = dojo.create('div', null, parentNode);
-            dojo.create('h1', {innerHTML: title}, node);
+            dojo.addClass(n.domNode, 'nestedLevel');
         }
-        for(var propertyName in schema.properties) {
-            var property = schema.properties[propertyName];
-            console.log(propertyName, property);
-            this.generate(propertyName, property, value && value[propertyName] || null, node);
-        }
+        dojo.place(n.domNode, parentNode);
         dojo.create('br', {clear: "all"}, parentNode);
+        return n;
     },
 
     generate_string: function(name, schema, value, node) {
-        console.log('generate_string', name, schema, value, node);
+        //console.log('generate_string', name, schema, value, node);
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
@@ -62,18 +67,20 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             t = new dijit.form.Textarea({
                 name: name,
                 value: init,
+                baseClass: 'dijitTextBox dijitTextArea',
             });
         }
-        dojo.create('label', {innerHTML: title, "for": t.id }, node);
+        if (title) dojo.create('label', {innerHTML: title, "for": t.id }, node);
         dojo.place(t.domNode, node);
         if (schema.description) {
             dojo.create('p', {className: "description", innerHTML: schema.description}, node);
         }
         dojo.create('br', {clear: "all"}, node);
+        return t;
     },
 
     generate_integer: function(name, schema, value, node) {
-        console.log('generate_integer', name, schema, value, node);
+        //console.log('generate_integer', name, schema, value, node);
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
@@ -89,75 +96,33 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             value: init,
             constraints: constraints,
         });
-        dojo.create('label', {innerHTML: title, "for": t.id }, node);
+        if (title) dojo.create('label', {innerHTML: title, "for": t.id }, node);
         dojo.place(t.domNode, node);
         dojo.create('br', {clear: "all"}, node);
+        return t;
     },
 
     generate_array: function(name, schema, value, parentNode) {
-        console.log('generate_array', name, schema, value, parentNode);
+        //console.log('generate_array', name, schema, value, parentNode);
         var title = schema.title || name;
         var init = value || schema['default'] || [];
-        var node = dojo.create('fieldset', {id: name}, parentNode);
-        dojo.create('legend', {innerHTML: title}, node);
-        if (schema.description) {
-            dojo.create('p', {className: "description", innerHTML: schema.description}, node);
-        }
-
-        for(var i = 0; i<=init.length; i++) {
-            this.generate('[]', schema.items, init[i], node);
-        }
-        var renumber = dojo.hitch(this, function() {
-            console.log('renumber', node, node.id);
-            var items;
-            if (schema.items.type == "object") {
-                items = dojo.query('#'+node.id+'>fieldset>legend');
-                console.log('object items', items);
-            } else {
-                items = dojo.query('#'+node.id+' > label');
-                console.log('simple items', items, node.id);
-            }
-            items.forEach(function(n, i) { n.innerHTML = '[' + (i+1) + ']'; });
+        var node = new unc.ArrayManager({
+            name: name,
+            title: title,
+            generator: dojo.hitch(this, 'generate'),
+            schema: schema.items,
+            init: init,
+            description: schema.description,
         });
-        renumber();
-            
-        var button = new dijit.form.Button({
-            label: "Add",
-            onClick: dojo.hitch(this, function() {
-                this.generate('[]', schema.items, null, node);
-                renumber();
-            }),
-        });
-        dojo.place(button.domNode, node);
+        dojo.place(node.domNode, parentNode);
         dojo.create('br', {clear: "all"}, parentNode);
+        return node;
     },
+
+    _getValueAttr: function() {
+        var children = this.getChildren();
+        //console.log('FG value', children);
+        return children[0].attr('value');
+    },
+
 });
-
-testSchema = {
-    type: "object",
-    title: "Test schema",
-    properties: {
-        foo: { type: "string",
-             },
-        fee: { type: "string",
-             'default': "default value",
-             },
-        bar: { type: "object",
-               properties: {
-                   bar1: { type: "string"},
-                   bar2: { type: "string"},
-               },
-             },
-        list: {
-            type: 'array',
-            items: {
-                type: "string",
-            },
-        },
-    },
-};
-
-initValue = {
-    foo: "foo value",
-    list: [ "hi", "ho" ],
-};
