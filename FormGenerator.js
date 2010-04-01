@@ -48,7 +48,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             dojo.addClass(n.domNode, 'nestedLevel');
         }
         dojo.place(n.domNode, parentNode);
-        dojo.create('br', {clear: "all"}, parentNode);
+        //dojo.create('br', {clear: "all"}, parentNode);
         return n;
     },
 
@@ -75,7 +75,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         if (schema.description) {
             dojo.create('p', {className: "description", innerHTML: schema.description}, node);
         }
-        dojo.create('br', {clear: "all"}, node);
+        //dojo.create('br', {clear: "all"}, node);
         return t;
     },
 
@@ -115,7 +115,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             description: schema.description,
         });
         dojo.place(node.domNode, parentNode);
-        dojo.create('br', {clear: "all"}, parentNode);
+        //dojo.create('br', {clear: "all"}, parentNode);
         return node;
     },
 

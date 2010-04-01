@@ -23,6 +23,7 @@ dojo.declare('unc.ObjectManager', [ dijit._Widget, dijit._Templated, dijit._Cont
             var property = this.schema.properties[propertyName];
             this.generator(propertyName, property, this.init && this.init[propertyName] || null,
                            this.containerNode);
+            dojo.create('br', {clear:'all'}, this.containerNode);
         }
     },
 
