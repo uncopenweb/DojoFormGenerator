@@ -9,53 +9,94 @@ var SpellBinderSchema = {
     "type":"object",
     "properties":{
 	"models":{
-            "title": "Models",
-            "description": "Enter several models illustrating the root, the result of adding the affix, and a description of the rule you used",
+            "title": "Model",
+            "description": "Enter one example for each way of adding the affix to a root. The example includes the root, the resulting word, and a brief description of the rule.",
 	    "type":"array",
             "items": {
 	        "type":"object",
 	        "properties":{
     	            "from": {
     		        "type":"string",
-    		        "title":"From"
+    		        "title":"From",
+                        "description":"Enter the root word.",
     	            },
     	            "to":{
     		        "type":"string",
-    		        "title":"To"
+    		        "title":"To",
+                        "description":"Enter the word with the affix added",
     	            },
     	            "rule":{
     		        "type":"string",
-                        "format":"text",
     		        "title":"Rule",
+                        "description":"Enter the rule you applied to get the root from the affix; e.g. \"adding ed\". The text should work in the <b>correct</b> messages below.",
     	            },
    	        }
             },
         },
         "correct":{
             "title": "Correct",
-            "description": "Enter several prompts to use after a correct answer. Use {answer} to refer to the correct answer and {rule} to refer to the rule.",
+            "description": "Enter several prompts to use after a correct answer; one of them will be randomly chosen. Use {answer} to refer to the correct answer and {rule} to refer to the rule given above.",
             "type": "array",
             "minItems": 1,
             "items": {
                 "type": "string",
+                "description": "Enter a sentence such as \"Good job! You wrote {answer} by {rule}.\"",
             },
         },
-        "wrong":{
-            "title": "Wrong",
-            "description": "Enter several prompts to use after an incorrect answer.",
+        "wrongFirst": {
+            "title": "Wrong first",
+            "description": "Enter prompts to use after an incorrect first attempt.",
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string" },
+            "default": [ "That word is not correct. Look at the sample words at the top of the page to help you figure out how to change this root word." ],
+            "items": { "type": "string",
+                       "description": "Enter a prompt encouraging them to try again." },
+        },
+        "wrongMiddle": {
+            "title": "Wrong middle",
+            "description": "Enter prompts to use for the second attempt up to the number of models above.",
+            "type": "array",
+            "minItems": 1,
+            "default": [ "That's still not correct. I have removed one of the models, try again." ],
+            "items": { "type": "string",
+                       "description": "Enter a prompt saying we have removed one more model." },
+        },
+        "wrongLast": {
+            "title": "Wrong last",
+            "description": "Enter prompts to use after all the incorrect models have been removed and the root has been typed in the blank.",
+            "type": "array",
+            "minItems": 1,
+            "default": ["I have typed the first part of the word into the blank. Now add an ending as shown by the last remaining model."],
+            "items": { "type": "string",
+                       "description:": "Enter a prompt encouraging them to try again with the root word now filled in the blank." },
+        },
+        "maxAttempts": {
+            "title": "Max attempts",
+            "description": "Enter the maximum number of attempts you want to allow.",
+            "type": "integer",
+            "minimum": 3,
+            "default": 5,
+        },
+        "wrongMaxAttempts": {
+            "title": "Max Attempts Message",
+            "description": "Enter prompts to use after the maximum number of tries. Give the answer using {answer} and {rule}.",
+            "type": "array",
+            "minItems": 1,
+            "default": [ "The correct answer was {answer}." ],
+            "items": { "type": "string",
+                       "description": "Enter a sentence providing the correct answer." },
         },
         "nextPrompt":{
             "title": "Next prompt",
             "description": "Enter several prompts to use when going to the next exercise.",
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string" },
+            "default": [ "Try this one.", "Now try this.", "Here's another." ],
+            "items": { "type": "string",
+                       "description": "Enter an sentence encouraging the student to continue."},
         },
         "sentences": {
-            "title": "Sentences",
+            "title": "Exercise",
             "description": "Enter sentences with (root) ______ showing the root word to use and the place to put it in the sentence. Also provide the expected answer and the number of the model to be used.",
             "type": "array",
             "minItems": 1,
@@ -67,15 +108,18 @@ var SpellBinderSchema = {
     		        "type":"string",
                         "format": "text",
     		        "title":"Sentence",
+                        "description": "Enter the sentence with the root word enclosed in parenthesis and the space indicated with underscores; e.g. I was (delight) ______.",
     	            },
     	            "answer":{
     		        "type":"string",
-    		        "title":"Answer"
+    		        "title":"Answer",
+                        "description": "Enter the correct word to fill the blank; e.g. delighted.",
     	            },
     	            "model":{
     		        "type": "integer",
-    		        "title":"model",
+    		        "title":"Model",
                         "minimum": 1,
+                        "description": "Enter the number of the correct model (see above) to use when answering this question; e.g. 1.",
     	            },
     	        },
             },

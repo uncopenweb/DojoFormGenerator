@@ -1,9 +1,8 @@
 <div class="uncArrayManager">
   <fieldset>
-    <legend>${title}</legend>
-    <div dojoAttachPoint="itemControl"></div>
+    <legend>${theTitle} <span dojoAttachPoint="arrayIndex"></span></legend>
+    <div dojoAttachPoint="arrayControl"></div>
     <p class="description">${description}</p>
     <div dojoAttachPoint="containerNode"></div>
-    <button dojoType="dijit.form.Button" type="button" dojoAttachPoint="addb" title="Click to add a ${title}" >Add</button>
   </fieldset>
 </div>

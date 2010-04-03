@@ -1,128 +1,278 @@
 dojo.provide('unc.FormGenerator');
 
+dojo.require('dijit._Templated');
+dojo.require('dijit._Widget');
+dojo.require('dijit._Container');
+
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.Editor');
-dojo.require('unc.ArrayManager');
-dojo.require('unc.ObjectManager');
+dojo.require('dijit.Tooltip');
 
 dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
     schema: {}, // object describing the JSON schema for the object this form is to edit,
     initValue: {}, // object giving the initial value for the object
 
-    startup: function() {
+    /**
+     * Called to initialize the FormGenerator. The content is generated and linked into the DOM.
+     */
+    postCreate: function() {
         this.inherited(arguments);
 
-        var w = this.generate_object(this.schema.title || '', this.schema, this.initValue, 
-                             this.containerNode, true);
+        var w = this.generate('formContent', this.schema, this.initValue);
         dojo.addClass(this.containerNode, 'uncFormGenerator');
+        dojo.place(w.domNode, this.containerNode);
     },
 
-    generate: function(name, schema, value, parentNode) {
-        //console.log('generate', name, schema, value, parentNode);
+    /**
+     * Generate controls for the given schema initialized with value, called recursively
+     */
+    generate: function(name, schema, value) {
+        // determine the method to call by introspection
         var type = schema.type;
         var method = 'generate_' + type;
         if (method in this) {
-            return this[method](name, schema, value, parentNode);
+            return this[method](name, schema, value);
         } else {
-            console.log('no method', method);
+            console.log('FormGenerator: no method', method);
         }
     },
 
-    generate_object: function(name, schema, value, parentNode, topLevel) {
-        //console.log('generate_object', name, schema, value, parentNode);
+    /**
+     * Generate fieldset for an object schema
+     */
+    generate_object: function(name, schema, value) {
         var title = schema.title || name;
-        var n = new unc.ObjectManager({
+        var manager = new unc.ObjectManager({
             name: name,
-            title: title,
-            generator: dojo.hitch(this, 'generate'),
-            schema: schema,
-            init: value,
+            theTitle: title,
             description: schema.description || ''
         });
-        if (topLevel) {
-            dojo.addClass(n.domNode, 'topLevel');
-        } else {
-            dojo.addClass(n.domNode, 'nestedLevel');
+
+        for(var propertyName in schema.properties) {
+            var propertySchema = schema.properties[propertyName];
+            var propertyValue = value && value[propertyName] || null;
+            manager.addChild(this.generate(propertyName, propertySchema, propertyValue));
         }
-        dojo.place(n.domNode, parentNode);
-        //dojo.create('br', {clear: "all"}, parentNode);
-        return n;
+        return manager;
     },
 
-    generate_string: function(name, schema, value, node) {
-        //console.log('generate_string', name, schema, value, node);
+    /**
+     * Generate a string input control
+     */
+    generate_string: function(name, schema, value) {
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
-        var t;
+        var description = schema['description'] || '';
+        var control;
         if (schema.format == 'html') {
-            t = new dijit.Editor({
+            control = new dijit.Editor({
                 name: name,
                 value: init,
             });
         } else {
-            t = new dijit.form.Textarea({
+            control = new dijit.form.Textarea({
                 name: name,
                 value: init,
-                baseClass: 'dijitTextBox dijitTextArea',
+                baseClass: 'dijitTextBox dijitTextArea', // why do I need this?
             });
         }
-        if (title) dojo.create('label', {innerHTML: title, "for": t.id }, node);
-        dojo.place(t.domNode, node);
-        if (schema.description) {
-            dojo.create('p', {className: "description", innerHTML: schema.description}, node);
-        }
-        //dojo.create('br', {clear: "all"}, node);
-        return t;
+        var manager = new unc.FieldManager({
+            theTitle: title,
+            control: control,
+            description: description
+        });
+        return manager;
     },
 
-    generate_integer: function(name, schema, value, node) {
-        //console.log('generate_integer', name, schema, value, node);
+    /**
+     * Generate an integer input control
+     */
+    generate_integer: function(name, schema, value) {
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
         var constraints = {places: 0};
+        var description = schema['description'] || '';
         if ("minimum" in schema) {
             constraints.min = schema['minimum'];
         }
         if ("maximum" in schema) {
             constraints.max = schema['maximum'];
         }
-        var t = new dijit.form.NumberSpinner({
+        var control = new dijit.form.NumberSpinner({
             name: name,
             value: init,
             constraints: constraints,
         });
-        if (title) dojo.create('label', {innerHTML: title, "for": t.id }, node);
-        dojo.place(t.domNode, node);
-        dojo.create('br', {clear: "all"}, node);
-        return t;
+        manager = new unc.FieldManager({
+            theTitle: title,
+            control: control,
+            description: description
+        });
+        return manager;
     },
 
-    generate_array: function(name, schema, value, parentNode) {
-        //console.log('generate_array', name, schema, value, parentNode);
+    /**
+     * Generate an array manager
+     */
+    generate_array: function(name, schema, value) {
+        //console.log('generate_array', name, schema, value);
         var title = schema.title || name;
         var init = value || schema['default'] || [];
-        var node = new unc.ArrayManager({
+        var manager = new unc.ArrayManager({
             name: name,
-            title: title,
-            generator: dojo.hitch(this, 'generate'),
-            schema: schema.items,
-            init: init,
+            theTitle: title,
             description: schema.description,
         });
-        dojo.place(node.domNode, parentNode);
-        //dojo.create('br', {clear: "all"}, parentNode);
-        return node;
+        // create an empty model item
+        var item = this.generate(title, schema.items, null);
+        // insert its add button
+        var button = dojo.create('img', {src: "images/add.png", width: "16", height: "16",
+            title: "Click to add a new " + title + "." }, item.arrayControl);
+        this.connect(button, 'onclick', function() {
+            var item = this.generate(title, schema.items, null);
+            manager.addItem(item);
+        })
+        // the model is disabled
+        item.attr('disabled', true);
+        // insert it into the manager
+        manager.addChild(item);
+
+        // now generate the real nodes
+        for (var i=0; i < init.length; i++) {
+            var item = this.generate(title, schema.items, init[i]);
+            manager.addItem(item);
+        }
+        return manager;
     },
 
+    /**
+     * Return the value of the object represented by the form
+     */
     _getValueAttr: function() {
         var children = this.getChildren();
-        //console.log('FG value', children);
-        return children[0].attr('value');
+        var result = dojo.map(children, function(child) { return child.attr('value'); });
+        // I expect only one child here at the top level
+        if (result.length == 1) {
+            result = result[0];
+        }
+        return result;
     },
 
+});
+
+dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Container ], {
+    templatePath: dojo.moduleUrl("unc", "ArrayManager.html"),
+    widgetsInTemplate: true,
+
+    name: "",
+    theTitle: "",
+    description: "",
+
+    /**
+     * Add an item to the array and decorate it with the array controls
+     */
+    addItem: function(item) {
+        var children = this.getChildren();
+        var N = children.length;
+        var button = dojo.create('img', {src: "images/cross.png", width: "16", height: "16",
+            title: "Click to delete this item." }, item.arrayControl);
+        this.connect(button, 'onclick', function() {
+            item.destroyRecursive();
+            this.renumber();
+        });
+        dojo.place(item.domNode, children[N-1].domNode, 'before');
+        item.arrayIndex.innerHTML = N;
+        children[N-1].arrayIndex.innerHTML = N+1;
+    },
+
+    /**
+     * Renumber the array items after a delete or other reorganization
+     */
+    renumber: function(item) {
+        dojo.forEach(this.getChildren(), function(item, index) {
+            item.arrayIndex.innerHTML = index+1;
+        });
+    },
+
+    /**
+     * Return the value of the array
+     */
+    _getValueAttr: function() {
+        var children = this.getChildren();
+        children.pop(); // the last one is the dummy example
+        var result = dojo.map(children, function(child) { return child.attr('value') }, this);
+        return result;
+    }
+
+});
+
+dojo.declare('unc.ObjectManager', [ dijit._Widget, dijit._Templated, dijit._Container ], {
+    templatePath: dojo.moduleUrl("unc", "ObjectManager.html"),
+    widgetsInTemplate: true,
+
+    name: "",
+    theTitle: "",
+    description: "",
+
+    /**
+     * Return the object's value
+     */
+    _getValueAttr: function() {
+        var children = this.getChildren();
+        var result = {};
+        dojo.forEach(children, function(child) {
+            result[child.name] = child.attr('value');
+        }, this);
+        return result;
+    },
+
+    /**
+     * Set the disabled attribute for all the children
+     */
+    _setDisabledAttr: function(value) {
+        dojo.forEach(this.getChildren(), function(child) {
+            child.attr('disabled', value);
+        });
+    },
+});
+
+dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Container ], {
+    templatePath: dojo.moduleUrl("unc", "FieldManager.html"),
+    widgetsInTemplate: true,
+
+    control: null,
+    name: "",
+    theTitle: "",
+    description: "",
+
+    /**
+     * Initialize the widget and connect up the tooltip
+     */
+    postCreate: function() {
+        this.inherited(arguments);
+        dojo.place(this.control.domNode, this.containerNode);
+        this.name = this.control.name;
+        if (this.description) {
+            new dijit.Tooltip({connectId: [ this.control.domNode ], label: this.description});
+        }
+    },
+
+    /**
+     * Return the value of the enclosed control
+     */
+    _getValueAttr: function() {
+        return this.control.attr('value');
+    },
+
+    /**
+     * Set the disabled attribute of the enclosed control
+     */
+    _setDisabledAttr: function(value) {
+        this.control.attr('disabled', value);
+    },
 });

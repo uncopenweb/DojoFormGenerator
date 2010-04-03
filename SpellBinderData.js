@@ -5,11 +5,7 @@ var SpellBinderData = {
             ],
   "correct": [ "That's right. You wrote the word {answer} by {rule}.",
                "Good job! You created {answer} by {rule}." ],
-  "wrong": [ "That word is not spelled correctly.  Look at the sample words at the top of the page to help you figure out how to add ed to this root word.",
-             "That word is spelled correctly but it is not what I'm looking for. Look at the sample words at the top of the page to help you figure out how to add ed to this root word.",
-             "That's still not correct. I have removed one of the models, try again.",
-             "I have typed the first part of the word into the blank. Now add an ending as shown by the last remaining model."
-           ],
+    "wrongFirst": [ "That word is not correct. Look at the sample words at the top of the page to help you figure out how to add ed to this root word." ],
   "nextPrompt": [ "Try this one.",
                   "Now try this.",
                   "Here's another",
