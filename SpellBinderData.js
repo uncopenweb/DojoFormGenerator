@@ -1,4 +1,5 @@
 var SpellBinderData = {
+    "name": "Add ed",
   "models": [ { "from":"present", "to":"presented", "rule":"adding ed" },
               { "from":"exaggerate", "to":"exaggerated","rule": "adding d" },
               { "from":"prefer", "to":"preferred", "rule":"doubling the last letter and adding ed"},

@@ -8,6 +8,11 @@ var SpellBinderSchema = {
     "description":"This form allows you to create new and edit existing instances of the SpellBinder activity.",
     "type":"object",
     "properties":{
+        "name": {
+            "type": "string",
+            "description": "Enter a brief description of this SpellBinder activity to help you find it later.",
+            "title": "Name",
+        },
 	"models":{
             "title": "Model",
             "description": "Enter one example for each way of adding the affix to a root. The example includes the root, the resulting word, and a brief description of the rule.",
