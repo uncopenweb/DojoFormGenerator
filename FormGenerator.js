@@ -66,18 +66,18 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
-        var description = schema['description'] || '';
+        var description = schema.description || '';
         var control;
         if (schema.format == 'html') {
             control = new dijit.Editor({
                 name: name,
-                value: init,
+                value: init
             });
         } else {
             control = new dijit.form.Textarea({
                 name: name,
                 value: init,
-                baseClass: 'dijitTextBox dijitTextArea', // why do I need this?
+                baseClass: 'dijitTextBox dijitTextArea' // why do I need this?
             });
         }
         var manager = new unc.FieldManager({
@@ -96,17 +96,17 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
         var constraints = {places: 0};
-        var description = schema['description'] || '';
+        var description = schema.description || '';
         if ("minimum" in schema) {
-            constraints.min = schema['minimum'];
+            constraints.min = schema.minimum;
         }
         if ("maximum" in schema) {
-            constraints.max = schema['maximum'];
+            constraints.max = schema.maximum;
         }
         var control = new dijit.form.NumberSpinner({
             name: name,
             value: init,
-            constraints: constraints,
+            constraints: constraints
         });
         manager = new unc.FieldManager({
             theTitle: title,
@@ -123,10 +123,11 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         //console.log('generate_array', name, schema, value);
         var title = schema.title || name;
         var init = value || schema['default'] || [];
+        var description = schema.description || "";
         var manager = new unc.ArrayManager({
             name: name,
             theTitle: title,
-            description: schema.description,
+            description: description
         });
         // create an empty model item
         var item = this.generate(title, schema.items, null);
@@ -136,7 +137,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         this.connect(button, 'onclick', function() {
             var item = this.generate(title, schema.items, null);
             manager.addItem(item);
-        })
+        });
         // the model is disabled
         item.attr('disabled', true);
         // insert it into the manager
@@ -144,7 +145,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
 
         // now generate the real nodes
         for (var i=0; i < init.length; i++) {
-            var item = this.generate(title, schema.items, init[i]);
+            item = this.generate(title, schema.items, init[i]);
             manager.addItem(item);
         }
         return manager;
@@ -161,7 +162,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             result = result[0];
         }
         return result;
-    },
+    }
 
 });
 
@@ -205,7 +206,7 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
     _getValueAttr: function() {
         var children = this.getChildren();
         children.pop(); // the last one is the dummy example
-        var result = dojo.map(children, function(child) { return child.attr('value') }, this);
+        var result = dojo.map(children, function(child) { return child.attr('value'); }, this);
         return result;
     }
 
@@ -238,7 +239,7 @@ dojo.declare('unc.ObjectManager', [ dijit._Widget, dijit._Templated, dijit._Cont
         dojo.forEach(this.getChildren(), function(child) {
             child.attr('disabled', value);
         });
-    },
+    }
 });
 
 dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Container ], {
@@ -258,7 +259,9 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
         dojo.place(this.control.domNode, this.containerNode);
         this.name = this.control.name;
         if (this.description) {
-            new dijit.Tooltip({connectId: [ this.control.domNode ], label: this.description});
+            var tt = new dijit.Tooltip({
+                connectId: [ this.control.domNode ], 
+                label: this.description});
         }
     },
 
@@ -274,5 +277,5 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
      */
     _setDisabledAttr: function(value) {
         this.control.attr('disabled', value);
-    },
+    }
 });
