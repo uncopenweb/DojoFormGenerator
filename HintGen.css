@@ -1,0 +1,11 @@
+@CHARSET "ISO-8859-1";
+
+.HintGen {
+	height:100%;
+	width:100%;
+}
+
+#output {
+	width:100%;
+	min-height:400px;
+}

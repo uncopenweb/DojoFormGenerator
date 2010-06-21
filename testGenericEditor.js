@@ -1,4 +1,4 @@
-dojo.require('unc.CollectionEditor');
+dojo.require('unc.GenericEditor');
 dojo.require('dojox.json.schema');
 dojo.require('dojox.data.JsonRestStore');
 dojo.require('dojox.grid.DataGrid');
@@ -15,12 +15,12 @@ function main() {
     //store.newItem(WordBuilderData);
     //store.save();
     //return;
-    var editor = new unc.CollectionEditor({
+    var editor = new unc.GenericEditor({
         store: store,
         //schema: SpellBinderSchema,
-        schema: WordBuilderSchema,
+        schema: TextTilesSchema,
         gridLayout: gridLayout});
-    dojo.place(editor.domNode, dojo.body());
+//    dojo.place(editor.domNode, dojo.body());
     editor.startup();
 }
 

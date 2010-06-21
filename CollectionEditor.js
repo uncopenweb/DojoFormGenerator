@@ -39,7 +39,7 @@ dojo.declare('unc.CollectionEditor', [ dijit._Widget, dijit._Templated, dijit._C
     checkSelection: function() {
         var selected = this.grid.selection.getSelected();
         console.log('cS', selected);
-        this.deleteButton.attr('disabled', selected.length === 0);
+        this.deleteButton.attr('disabled', selected.length == 0);
         this.current = selected[0];
     },
 
@@ -54,9 +54,7 @@ dojo.declare('unc.CollectionEditor', [ dijit._Widget, dijit._Templated, dijit._C
         var row = evt.rowIndex;
         var item = this.grid.getItem(row);
         this.current = item; // remember which we're editing
-        if (this.form !== null) {
-            this.form.destroyRecursive();
-        }
+        if (this.form != null) this.form.destroyRecursive();
         this.form = new unc.FormGenerator({
             schema: this.schema,
             initValue: item });
@@ -69,9 +67,7 @@ dojo.declare('unc.CollectionEditor', [ dijit._Widget, dijit._Templated, dijit._C
     newItem: function(e) {
         this.current = this.store.newItem();
         console.log('current', this.current);
-        if (this.form) {
-            this.form.destroyRecursive();
-        }
+        if (this.form) this.form.destroyRecursive();
         this.form = new unc.FormGenerator({
             schema: this.schema,
             initValue: this.current });

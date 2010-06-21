@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Collection Editor</title>
+    <style type="text/css">
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dojo/resources/dojo.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dijit/themes/tundra/tundra.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dojox/grid/resources/Grid.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dojox/grid/resources/tundraGrid.css";
+
+      @import "FormGenerator.css";
+      @import "testGenericEditor.css";
+      #grid {
+        width: 400px;
+        height: 200px;
+        border: 1px solid black;
+      }
+    </style>
+
+    <script type="text/javascript">
+        var djConfig = {
+            isDebug: false,
+            parseOnLoad: true,
+            baseUrl: './',
+            // map local widget namespaces -> paths relative to baseUrl
+            modulePaths: {'unc' : '.'}
+        };
+    </script>
+
+    <script type="text/javascript" 
+            src="http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dojo/dojo.xd.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+    <script type="text/javascript" src="TextTilesSchema.js"></script>
+    <script type="text/javascript" src="TextTilesData.js"></script>
+    <script type="text/javascript" src="testGenericEditor.js"></script>
+    <script type="text/javascript">
+    	dojo.require('dijit.layout.BorderContainer');
+    	dojo.require('dijit.layout.ContentPane');
+    </script>
+  </head>
+  <body class="tundra">
+  	<!--<div id='page' dojoType='dijit.layout.BorderContainer' liveSplitters='true'>
+  		<div dojoType='dijit.layout.ContentPane' region='top'>
+  			<div id='top' dojoAttachPoint='top'></div>
+  		</div>
+  		<div dojoType='dijit.layout.ContentPane' region='center'>
+  			<div id='left' dojoAttachPoint='left'></div>
+  		</div>
+  		<div id='rightPane' dojoType='dijit.layout.ContentPane' region='right'>
+  			<div id='right'></div>
+  		</div>
+  	</div>-->
+  </body>
+</html>

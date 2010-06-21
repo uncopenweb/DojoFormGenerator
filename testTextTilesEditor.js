@@ -1,28 +1,26 @@
-dojo.require('unc.CollectionEditor');
+dojo.require('unc.TextTilesEditor');
 dojo.require('dojox.json.schema');
 dojo.require('dojox.data.JsonRestStore');
 dojo.require('dojox.grid.DataGrid');
+dojo.require('dijit.layout.ContentPane');
+dojo.require('dijit.layout.BorderContainer');
+dojo.require('unc.HintGen');
 
 var gridLayout = [
-    { name: 'Name', field: 'name', width: "50%" },
+    { name: 'Lesson', field: 'name', width: "50%" },
     { name: 'Id', field: '_id', width: "50%" } ];
 
 function main() {
     var store = new dojox.data.JsonRestStore({
-        //target: "/data/BigWords/SpellBinder/",
-        target: "/data/BigWords/textTilesLessons/",
+        target: "/data/BigWords/lessonsTextTiles/",
         idAttribute: '_id' });
-    //store.newItem(WordBuilderData);
-    //store.save();
-    //return;
-    var editor = new unc.CollectionEditor({
+    
+    var editor = new unc.TextTilesEditor({
         store: store,
-        //schema: SpellBinderSchema,
-        schema: WordBuilderSchema,
+        schema: TextTilesSchema,
         gridLayout: gridLayout});
     dojo.place(editor.domNode, dojo.body());
     editor.startup();
 }
 
 dojo.ready(main);
-

@@ -1,0 +1,9 @@
+html, body, #page {
+    width: 100%; 
+    height: 100%;
+    overflow: hidden;
+}
+
+#rightPane {
+	width: 50%;
+}
