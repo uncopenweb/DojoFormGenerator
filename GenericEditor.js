@@ -21,23 +21,22 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
 	form: null, // form control if it has been created
 	
 	postCreate: function() {
-		this.inherited(arguments);
-		
-		this.grid = new dojox.grid.DataGrid({
-			store: this.store,
-			structure: this.gridLayout});
-		dojo.place(this.grid.domNode, this.gridGoesHere);
-//        this.connect(this.grid, 'onSelectionChanged', 'getSelection');
-		this.connect(this.grid, 'onSelected', 'lightSelect');
-		this.connect(this.grid, 'onRowDblClick', 'hardSelect');
-      this.connect(this.editButton, 'onClick', 'hardSelect');
-      this.connect(this.deleteButton, 'onClick', 'deleteItem');
-      this.deleteButton.attr('disabled', true);
-      this.connect(this.newButton, 'onClick', 'newItem');
-      this.connect(this.saveButton, 'onClick', 'save');
-      this.saveButton.attr('disabled', true);        
-      this.connect(this.saveNewButton, 'onClick', 'saveAsNew');
-      this.saveNewButton.attr('disabled', true);
+	    this.inherited(arguments);
+
+	    this.grid = new dojox.grid.DataGrid({
+	        store: this.store,
+	        structure: this.gridLayout});
+	    dojo.place(this.grid.domNode, this.gridGoesHere);
+	    this.connect(this.grid, 'onSelected', 'lightSelect');
+	    this.connect(this.grid, 'onRowDblClick', 'hardSelect');
+	    this.connect(this.editButton, 'onClick', 'hardSelect');
+	    this.connect(this.deleteButton, 'onClick', 'deleteItem');
+	    this.deleteButton.attr('disabled', true);
+	    this.connect(this.newButton, 'onClick', 'newItem');
+	    this.connect(this.saveButton, 'onClick', 'save');
+	    this.saveButton.attr('disabled', true);        
+	    this.connect(this.saveNewButton, 'onClick', 'saveAsNew');
+	    this.saveNewButton.attr('disabled', true);
         
         this.store.fetch({query: {name:"default"}, onComplete: dojo.hitch(this, function(items) {
         	if(items.length > 0)
@@ -62,7 +61,6 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
         //prompt for save?
         this.current = selected[0];
 		this.selectedGoesHere.innerHTML = "<h1><b>Currently Open: " + this.current.name + "</b></h1>";
-		//Set some 'selected' state
 		this.editItem();
 	},
 	
@@ -106,10 +104,10 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
 	},
 	
 	saveAsNew: function() {
-		console.log('::: Save as new not currently implemented :::');
-		return; //what does this do? unexpected behavior here, definitly
-		delete this.current._id;
-		this.save();
+//		console.log('::: Save as new not currently implemented :::');
+//		return; //what does this do? unexpected behavior here, definitly
+//		delete this.current._id;
+//		this.save();
 	},
 	
 	deleteItem: function() {

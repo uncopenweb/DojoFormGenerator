@@ -9,13 +9,15 @@ dojo.require('dijit.form.Button');
 dojo.require('dijit.Dialog');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('dojo.data.ItemFileWriteStore');
+dojo.require('dijit.layout.BorderContainer');
+dojo.require('dijit.layout.ContentPane');
 
 dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._Templated, dijit._Container ], {
 	templatePath: dojo.moduleUrl('unc', 'TextTilesEditor.html'),
 	widgetsInTemplate: true,
 	
-	hintStore: {},
-	wordStore: {}, //substore used to represent the words of hints
+	lessonStore: {},
+	hintStore: {}, //layer over currentHints for store interfacing
 	hintGridLayout: [{ name: 'Word', field:'word', width: '50%' },
 	                 { name: 'hints',   field: 'hints', width: '50%' }],
     selectedHint: null,
@@ -23,26 +25,70 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 	postCreate: function() {
 		this.inherited(arguments);
 		
-		uow.getDatabase({database: 'BigWords',
-			collection: 'demoHints'}).addCallback(dojo.hitch(this, function(db) {
-			this.hintStore = db;
-			}));
+		this.hintGenerator = new unc.HintGen();
+		this.subscribe('hints_ready', function() {
+		    console.log('pub recieved');
+		    this.currentHints = this.hintGenerator.json;
+		    this.newHintGrid();
+		});
 		
-		this.hintGenerator = new unc.HintGen({});
-		
+		this.lessonGrid = new dojox.grid.DataGrid({
+            store: this.lessonStore,
+            structure: this.lessonGridLayout
+            });
+        dojo.place(this.lessonGrid.domNode, this.lessonGridGoesHere);
+        
 		this.generateHintsButton.attr('disabled', true);
 		this.removeHintButton.attr('disabled', true);
-		this.saveHintButton.attr('disabled', true);
-		this.connect(this.generateHintsButton, 'onClick', 'generateHint');
+		this.connect(this.generateHintsButton, 'onClick', 'generateHints');
 		this.connect(this.removeHintButton, 'onClick', 'removeHint');
-		this.connect(this.saveHintButton, 'onClick', 'saveHint');
+		this.saveNewButton.attr('disabled', true);
+		this.connect(this.saveNewButton, 'onClick', 'saveAsLesson');
 	},
+	
+	startup: function() {
+	    this.inherited(arguments);
+	    
+	    this.lessonGrid.startup();
+	},
+	
+	/*** Template Selection methods ***/
+	/*     the rest is handled by
+	 *     genericEditor.js
+	 */
 	
 	editItem: function() {
 		this.inherited(arguments);
+		this.currentHints = null;
+		
+		//override
+		this.saveNewButton.attr('disabled', true);
 		
 		this.newHintGrid();
 	},
+	
+	saveAsLesson: function() {
+	    // combine both this.current and this.currentHints to a lesson and save
+	    var value = this.form.attr('value');
+	    
+	    var currentLesson = this.lessonStore.newItem();
+        
+        this.lessonStore.changing(currentLesson);
+        dojo.mixin(currentLesson, value);
+        dojo.mixin(currentLesson, {hints:this.currentHints});
+        console.log(currentLesson);
+        var a = this.lessonStore.save({
+            onComplete: function() {
+                console.log('save complete, does grid update?');
+                // apparently they don't trigger this when changing is used.
+                this.lessonStore.onSet(this.current);
+            },
+            scope: this
+        });
+        console.log('actions=', a);
+	},
+	
+	/*** Hint Generation methods ***/
 	
 	selectHint: function() {
 		this.selectedHint = this.hintGrid.selection.getSelected()[0];
@@ -50,46 +96,23 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 		this.removeHintButton.attr('disabled', false);
 	},
 	
+	//On hold until hints are being drawn correctly from the lesson
 	removeHint: function() {
-		var base = this.current.lessonWord;
-		this.hintStore.fetch({query: {base:base}, 
-			onComplete: dojo.hitch(this, function(items) {
-				
-				dojo.forEach(items, function(item) { this.hintStore.deleteItem(item); }, this);
-				
-				if(items.length > 0) {
-					var base = items[0];
-					var newWords = [];
-					for(var i = 0; i < base.words.length; i++) { //Reconstruct a new 'words' array without the deleted ones
-						if(base.words[i].word != this.selectedHint.word) {
-							newWords.push(base.words[i]);
-						}
-					}
-					base.words = newWords;
-					this.hintStore.newItem(base);
+	    
+		var newWords = [];
+		for(var i = 0; i < this.currentHints.words.length; i++) { //Reconstruct a new 'words' array without the deleted ones
+			if(this.currentHints.words[i].word != this.selectedHint.word) {
+				newWords.push(this.currentHints.words[i]);
 			}
-			
-		})
-		});
-		this.wordStore.deleteItem(this.selectedHint);
+		}
+		this.currentHints.words = newWords;
+
+		this.hintStore.deleteItem(this.selectedHint);
 		this.removeHintButton.attr('disabled', true);
+		console.log(this.currentHints);
 	},
 	
-	saveHint: function() {
-		this.hintStore.save();
-//		this.hintStore.changing(this.selectedHint);
-//        var a = this.hintStore.save({
-//            onComplete: function() {
-//                console.log('save complete, does grid update?');
-//                // apparently they don't trigger this when changing is used.
-//                this.store.onSet(this.current);
-//            },
-//            scope: this
-//        });
-//        console.log('actions=', a);
-	},
-	
-	generateHint: function() {
+	generateHints: function() {
 		var generateCallback = dojo.hitch(this, function(gen) { 
 			
 			if(!this.current.lessonWord) {
@@ -100,67 +123,62 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 			}
 			
 			if(gen) {
-				
 				this.hintGenerator.generateHints(this.current.lessonWord);
-				
 			} else {
 				console.log('generate canceled');
 			}
 		});
-		this.yesNoDialog("Generate Hints?", "Generating hints will cause the current hint bank to be deleted. " +
+		
+		if(this.currentHints) {
+		    this.yesNoDialog("Generate Hints?", "Generating hints will cause the current hint bank to be deleted. " +
 				"If you have edited the TextTiles schema file you will need to regenerate hints keep your content updated.",
 				generateCallback);
+		} else {
+		    generateCallback(true);
+		}
+		
+		this.saveNewButton.attr('disabled', false);
 	},
 	
 	//Util
 	
 	newHintGrid: function() {
-		if(this.hintGrid) this.hintGrid.destroyRecursive();
-		
-		var base = this.current.lessonWord;
-		var hint;
-		
-		//get hint for base word -> fetch from demoHints
-		this.hintStore.fetch({query: {base:base}, onComplete: dojo.hitch(this, function(items) {
-			if(items.length > 0) {
-				hint = items[0];
-			}
-			
-			//format object oh so carefully for itemfilereadstore...
-			var data = [];
-			dojo.forEach(
-					hint.words,
-					function(item) {
-						var obj = {'word':item.word, 'id':item.id, 'numHints':item.hints.length,
-								'uIdx':'Freq data, yet to implement'};
-						data.push(obj);
-					});
+	    if(this.hintGrid) this.hintGrid.destroyRecursive();
 
-			this.wordStore = new dojo.data.ItemFileWriteStore({data:{
-				"identifier":"word",
-				"items": data}});
-			
-			var hintGridLayout = [{ name: 'Word', field:'word', width: '50%' },
-			                      { name: '# of hints for word',   field:'numHints',   width: '25%'},
-			                      { name: 'Word frequency', field:'uIdx', width: '25%'}];
-			
-			this.hintGrid = new dojox.grid.DataGrid({
-				store: this.wordStore,
-				structure: hintGridLayout,
-				//autoHeight: true
-				rowCount:20
-				});
-			
-			dojo.place(this.hintGrid.domNode, this.hintGridGoesHere);
-			this.hintGrid.startup();
+	    //format object oh so carefully for itemfilereadstore...
+	    var data = [];
+	    if(this.currentHints) {
+    	    dojo.forEach(
+        	    this.currentHints.words,
+        	    function(item) {
+        	    var obj = {'word':item.word, 'id':item.id, 'numHints':item.hints.length,
+        	    'uIdx':'Freq data, yet to implement'};
+        	    data.push(obj);
+    	    });
+	    }
 
-			this.connect(this.hintGrid, 'onSelected', 'selectHint');
-			this.removeHintButton.attr('disabled', true);
-			this.saveHintButton.attr('disabled', false);
-			this.generateHintsButton.attr('disabled', false);
-		})
-		});
-		
+	    this.hintStore = new dojo.data.ItemFileWriteStore({data:{
+	        "identifier":"word",
+	        "items": data}});
+
+	    var hintGridLayout = [{ name: 'Word', field:'word', width: '50%' },
+	                          { name: '# of hints for word',   field:'numHints',   width: '25%'},
+	                          { name: 'Word frequency', field:'uIdx', width: '25%'}];
+
+	    this.hintGrid = new dojox.grid.DataGrid({
+	        store: this.hintStore,
+	        structure: hintGridLayout,
+	        //autoHeight: true
+	        rowCount:20
+	    });
+
+	    dojo.place(this.hintGrid.domNode, this.hintGridGoesHere);
+	    this.hintGrid.startup();
+
+	    this.connect(this.hintGrid, 'onSelected', 'selectHint');
+	    this.removeHintButton.attr('disabled', true);
+	    this.generateHintsButton.attr('disabled', false);
+
 	}
 	
 });
