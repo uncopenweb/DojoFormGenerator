@@ -1,5 +1,11 @@
-#grid, #hintGrid, #lessonGrid {
+#grid, #lessonGrid {
     width: 400px;
     height: 200px;
+    border: 1px solid black;
+}
+
+#hintGrid {
+    width: 400px;
+    height:400px;
     border: 1px solid black;
 }

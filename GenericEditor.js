@@ -79,7 +79,6 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
 	//Note: Does not fire through 'hardSelect', but follows same behavior
 	newItem: function(evt) {
 		this.current = this.store.newItem();
-		this.selectedGoesHere.innerHTML = "<h1><b>New Lesson</b></h1>";
 		this.grid.selection.select(this.grid.getItemIndex(this.current));
 		this.newForm(this._default);
 		this.saveButton.attr('disabled', false);

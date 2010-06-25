@@ -6,6 +6,7 @@ dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dijit._Container');
 dojo.require('dijit.form.Button');
+dojo.require('dijit.form.TextBox');
 dojo.require('dijit.Dialog');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('dojo.data.ItemFileWriteStore');
@@ -44,6 +45,9 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 		this.connect(this.removeHintButton, 'onClick', 'removeHint');
 		this.saveNewButton.attr('disabled', true);
 		this.connect(this.saveNewButton, 'onClick', 'saveAsLesson');
+		this.connect(this.lessonGrid, 'onSelected', 'lightSelectLesson');
+		this.connect(this.deleteLessonButton, 'onClick', 'deleteLesson');
+		this.deleteLessonButton.attr('disabled', true);
 	},
 	
 	startup: function() {
@@ -57,6 +61,12 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 	 *     genericEditor.js
 	 */
 	
+	newItem: function() {
+	    this.inherited(arguments);
+	    
+        this.selectedGoesHere.innerHTML = "<h1><b>New Lesson Template</b></h1>";
+	},
+	
 	editItem: function() {
 		this.inherited(arguments);
 		this.currentHints = null;
@@ -67,25 +77,55 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 		this.newHintGrid();
 	},
 	
+	/*** Lesson Methods ***/
+	
+	lightSelectLesson: function(idx) {
+        this.selectedLesson = this.lessonGrid.getItem(idx);
+        console.log("Light selected lesson: " + this.selectedLesson);
+        this.deleteLessonButton.attr('disabled', false);
+    },
+	
 	saveAsLesson: function() {
-	    // combine both this.current and this.currentHints to a lesson and save
-	    var value = this.form.attr('value');
-	    
-	    var currentLesson = this.lessonStore.newItem();
-        
-        this.lessonStore.changing(currentLesson);
-        dojo.mixin(currentLesson, value);
-        dojo.mixin(currentLesson, {hints:this.currentHints});
-        console.log(currentLesson);
-        var a = this.lessonStore.save({
-            onComplete: function() {
-                console.log('save complete, does grid update?');
-                // apparently they don't trigger this when changing is used.
-                this.lessonStore.onSet(this.current);
-            },
-            scope: this
+        var saveLessonCallback = dojo.hitch(this, function(save, lessonName) {
+            
+            if(!save) {
+                console.log(save);
+                console.log('save canceled');
+                return;
+            }
+            // combine both this.current and this.currentHints to a lesson and save
+            console.log(lessonName);
+            this.lessonStore.fetch({query:{name:lessonName}, onComplete: dojo.hitch(this, function(items) { 
+                console.log(items);
+                dojo.forEach(items, function(item) { console.log(item.name); 
+                this.lessonStore.deleteItem(item); }, this);
+                
+                var value = this.form.attr('value');
+                var currentLesson = this.lessonStore.newItem();
+                dojo.mixin(currentLesson, value);
+                dojo.mixin(currentLesson, {hints:this.currentHints});
+                currentLesson.name = lessonName;
+                this.lessonStore.save();
+                }) 
+            });
         });
-        console.log('actions=', a);
+        this.inputDialog("Save as Lesson?", "This will save the currently open template and generated" +
+        		" hints as one lesson file", saveLessonCallback);
+	},
+	
+	deleteLesson: function() {
+       var deleteCallback = dojo.hitch(this, function(del) {
+            if(del) {
+                this.lessonStore.deleteItem(this.selectedLesson);
+                this.lessonStore.save();
+                this.deleteLessonButton.attr('disabled', true);
+            }
+            else {
+                console.log("delete canceled");
+            }
+        });
+        this.yesNoDialog("Delete Item?", dojo.replace("Are you sure you want to delete the lesson: '{0}'?", 
+                    [this.selectedLesson.name]), deleteCallback);
 	},
 	
 	/*** Hint Generation methods ***/
@@ -179,6 +219,43 @@ dojo.declare('unc.TextTilesEditor', [ unc.GenericEditor, dijit._Widget, dijit._T
 	    this.removeHintButton.attr('disabled', true);
 	    this.generateHintsButton.attr('disabled', false);
 
-	}
+	},
+	
+	inputDialog: function(title, content, callback) {
+        
+        var dialog = new dijit.Dialog({id: 'inputDialog', title:title });
+        
+        var questionDiv = dojo.create('div', { innerHTML: content });
+        var dividerDiv = dojo.create('div', {innerHTML: "<br>"});
+        var inputLabel = dojo.create('label', { 'for':'inputField', innerHTML:"Lesson Name" });
+        var inputField = new dijit.form.TextBox(
+                { id: 'inputField' });
+        
+        var callbackwrapper = dojo.hitch(this, function(mouseEvent) {
+            var input = inputField.attr('value');
+            dialog.hide();
+            dialog.destroyRecursive();
+            if(mouseEvent.explicitOriginalTarget.id == 'confirmButton') {
+                callback(true, input);
+            } else {
+                callback(false, input);
+            }
+        });
+        
+        var confirmButton = new dijit.form.Button(
+                { label: 'Confirm', id: 'confirmButton', onClick: callbackwrapper });
+        var cancelButton = new dijit.form.Button(
+                { label: 'Cancel', id: 'cancelButton', onClick: callbackwrapper });
+        
+        dialog.containerNode.appendChild(questionDiv);
+        dialog.containerNode.appendChild(confirmButton.domNode);
+        dialog.containerNode.appendChild(cancelButton.domNode);
+        dialog.containerNode.appendChild(dividerDiv);
+        dialog.containerNode.appendChild(inputLabel);
+        dialog.containerNode.appendChild(inputField.domNode);
+
+        dialog.show();
+        
+    }
 	
 });
