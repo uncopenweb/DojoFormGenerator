@@ -35,12 +35,11 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
         this.deleteButton.attr('disabled', true);
         this.connect(this.newButton, 'onClick', 'newItem');
         this.connect(this.saveButton, 'onClick', 'save');
-        this.saveButton.attr('disabled', true);        
+        this.saveButton.attr('disabled', true);
         this.connect(this.saveNewButton, 'onClick', 'saveAsNew');
         this.saveNewButton.attr('disabled', true);
-        
         this.store.fetch({
-            query: {name:"default"}, 
+            query: {name:"default"},
             onComplete: function(items) {
                 if(items.length > 0) {
                     this._default = items[0];
@@ -49,7 +48,6 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
             },
             scope: this
         });
-        
         console.log(this.schema);
     },
     
@@ -174,7 +172,8 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
         dialog.containerNode.appendChild(noButton.domNode);
 
         dialog.show();
-        
+
     }
-    
+
 });
+
