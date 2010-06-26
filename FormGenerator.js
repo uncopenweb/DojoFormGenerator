@@ -8,6 +8,7 @@ dojo.require('dijit.form.Form');
 dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.NumberSpinner');
+dojo.require('dijit.form.NumberTextBox');
 dojo.require('dijit.Editor');
 dojo.require('dijit.Tooltip');
 
@@ -53,7 +54,10 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
 
         for(var propertyName in schema.properties) {
             var propertySchema = schema.properties[propertyName];
-            var propertyValue = value && value[propertyName] || null;
+            var propertyValue = null;
+            if (value && value[propertyName] !== undefined) {
+                propertyValue = value[propertyName];
+            }
             manager.addChild(this.generate(propertyName, propertySchema, propertyValue));
         }
         return manager;
@@ -92,10 +96,40 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      * Generate an integer input control
      */
     generate_integer: function(name, schema, value) {
+        console.log('generate integer', schema, value);
         var title = schema.title || name;
         var format = schema.format || 'text';
-        var init = value || schema['default'] || '';
+        var init = value || schema['default'] || 0;
         var constraints = {places: 0};
+        var description = schema.description || '';
+        if ("minimum" in schema) {
+            constraints.min = schema.minimum;
+        }
+        if ("maximum" in schema) {
+            constraints.max = schema.maximum;
+        }
+        var control = new dijit.form.NumberSpinner({
+            name: name,
+            value: init,
+            constraints: constraints
+        });
+        manager = new unc.FieldManager({
+            theTitle: title,
+            control: control,
+            description: description
+        });
+        return manager;
+    },
+
+    /**
+     * Generate a number input control
+     */
+    generate_number: function(name, schema, value) {
+        console.log('generate number', schema, value);
+        var title = schema.title || name;
+        var format = schema.format || 'text';
+        var init = value || schema['default'] || 0;
+        var constraints = { };
         var description = schema.description || '';
         if ("minimum" in schema) {
             constraints.min = schema.minimum;
