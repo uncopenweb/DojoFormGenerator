@@ -13,29 +13,29 @@ var SpellBinderSchema = {
             "description": "Enter a brief description of this SpellBinder activity to help you find it later.",
             "title": "Name",
         },
-	"models":{
+    "models":{
             "title": "Model",
             "description": "Enter one example for each way of adding the affix to a root. The example includes the root, the resulting word, and a brief description of the rule.",
-	    "type":"array",
+        "type":"array",
             "items": {
-	        "type":"object",
-	        "properties":{
-    	            "from": {
-    		        "type":"string",
-    		        "title":"From",
+            "type":"object",
+            "properties":{
+                    "from": {
+                    "type":"string",
+                    "title":"From",
                         "description":"Enter the root word.",
-    	            },
-    	            "to":{
-    		        "type":"string",
-    		        "title":"To",
+                    },
+                    "to":{
+                    "type":"string",
+                    "title":"To",
                         "description":"Enter the word with the affix added",
-    	            },
-    	            "rule":{
-    		        "type":"string",
-    		        "title":"Rule",
+                    },
+                    "rule":{
+                    "type":"string",
+                    "title":"Rule",
                         "description":"Enter the rule you applied to get the root from the affix; e.g. \"adding ed\". The text should work in the <b>correct</b> messages below.",
-    	            },
-   	        }
+                    },
+               }
             },
         },
         "correct":{
@@ -106,27 +106,27 @@ var SpellBinderSchema = {
             "type": "array",
             "minItems": 1,
             "items": {
-	        "type":"object",
+            "type":"object",
                 "minItems": 1,
-	        "properties":{
-    	            "sentence":{
-    		        "type":"string",
+            "properties":{
+                    "sentence":{
+                    "type":"string",
                         "format": "text",
-    		        "title":"Sentence",
+                    "title":"Sentence",
                         "description": "Enter the sentence with the root word enclosed in parenthesis and the space indicated with underscores; e.g. I was (delight) ______.",
-    	            },
-    	            "answer":{
-    		        "type":"string",
-    		        "title":"Answer",
+                    },
+                    "answer":{
+                    "type":"string",
+                    "title":"Answer",
                         "description": "Enter the correct word to fill the blank; e.g. delighted.",
-    	            },
-    	            "model":{
-    		        "type": "integer",
-    		        "title":"Model",
+                    },
+                    "model":{
+                    "type": "integer",
+                    "title":"Model",
                         "minimum": 1,
                         "description": "Enter the number of the correct model (see above) to use when answering this question; e.g. 1.",
-    	            },
-    	        },
+                    },
+                },
             },
         },
         "instructions":{
