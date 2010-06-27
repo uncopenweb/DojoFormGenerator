@@ -3,3 +3,7 @@ html, body, #page {
     height: 100%;
     overflow: hidden;
 }
+
+#right {
+    width: 50%;
+}

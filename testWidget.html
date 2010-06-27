@@ -1,8 +1,10 @@
-<div id="page" dojoType="dijit.layout.BorderContainer" liveSplitters="true" design='sidebar' style="height:100%;">
-    <div dojoType="dijit.layout.ContentPane" region='center'>
-        test center
-    </div>
-    <div dojoType="dijit.layout.ContentPane" region='left' style="width:50%">
-        test left
+<div dojoAttachPoint="containerNode" style="height:100%;">
+    <div id="page" dojoType="dijit.layout.BorderContainer" liveSplitters="true" design='sidebar' dojoAttachPoint="subContainerWidget">
+        <div dojoType="dijit.layout.ContentPane" region='center'>
+                test center
+        </div>
+        <div id="right" dojoType="dijit.layout.ContentPane" region='left'>
+                test left
+        </div>
     </div>
 </div>
