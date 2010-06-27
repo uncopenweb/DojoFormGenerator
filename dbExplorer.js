@@ -7,7 +7,7 @@ var limit = 100;
 
 dojo.declare('unc.dbExplorer', [], {
     constructor: function() {
-        dojo.connect(dijit.byId('listButton'), 'onClick', this, 'listCollection')
+        dojo.connect(dijit.byId('db'), 'onBlur', this, 'listCollection')
         dojo.connect(dijit.byId('openButton'), 'onClick', this, 'open')
         console.log('constructed');
     },
