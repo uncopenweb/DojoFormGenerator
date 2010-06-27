@@ -6,19 +6,34 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('unc.HintGen');
 
-var gridLayout = [
+var lessonGridLayout = [
     { name: 'Lesson', field: 'name', width: "50%" },
     { name: 'Id', field: '_id', width: "50%" } ];
 
+var templateGridLayout = [
+    { name: 'Template', field: 'name', width:"50%" },
+    { name: 'Id', field: '_id', width: '50%' } ];
+
 function main() {
-    var store = new dojox.data.JsonRestStore({
-        target: "/data/BigWords/lessonsTextTiles/",
-        idAttribute: '_id' });
+    var templateStore;
+    var lessonStore;
+    
+    uow.getDatabase({database: 'BigWords',
+        collection: 'TextTilesTemplates'}).addCallback(dojo.hitch(this, function(db) {
+            templateStore = db;
+        }));
+    uow.getDatabase({database: 'BigWords',
+        collection: 'TextTilesLessons'}).addCallback(dojo.hitch(this, function(db) {
+            lessonStore = db;
+        }));
     
     var editor = new unc.TextTilesEditor({
-        store: store,
+        store: templateStore,
+        lessonStore: lessonStore,
         schema: TextTilesSchema,
-        gridLayout: gridLayout});
+        lessonGridLayout: lessonGridLayout,
+        gridLayout: templateGridLayout
+        });
     dojo.place(editor.domNode, dojo.body());
     editor.startup();
 }

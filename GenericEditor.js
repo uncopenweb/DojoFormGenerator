@@ -22,12 +22,11 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
     
     postCreate: function() {
         this.inherited(arguments);
-        
+
         this.grid = new dojox.grid.DataGrid({
             store: this.store,
             structure: this.gridLayout});
         dojo.place(this.grid.domNode, this.gridGoesHere);
-//        this.connect(this.grid, 'onSelectionChanged', 'getSelection');
         this.connect(this.grid, 'onSelected', 'lightSelect');
         this.connect(this.grid, 'onRowDblClick', 'hardSelect');
         this.connect(this.editButton, 'onClick', 'hardSelect');
@@ -64,7 +63,6 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
         //prompt for save?
         this.current = selected[0];
         this.selectedGoesHere.innerHTML = "<h1><b>Currently Open: " + this.current.name + "</b></h1>";
-        //Set some 'selected' state
         this.editItem();
     },
     
@@ -83,7 +81,6 @@ dojo.declare('unc.GenericEditor', [dijit._Widget, dijit._Templated, dijit._Conta
     //Note: Does not fire through 'hardSelect', but follows same behavior
     newItem: function(evt) {
         this.current = this.store.newItem();
-        this.selectedGoesHere.innerHTML = "<h1><b>New Lesson</b></h1>";
         this.grid.selection.select(this.grid.getItemIndex(this.current));
         this.newForm(this._default);
         this.saveButton.attr('disabled', false);

@@ -1,21 +1,29 @@
 <div class="TextTilesEditor">
-  <div style="float:left;">
-  <h1>Lesson Selection</h1>
-  <div id="grid" dojoAttachPoint="gridGoesHere"></div>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="deleteButton" type="button">Delete</button>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="newButton" type="button">New</button>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="editButton" type="button">Edit</button>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="saveButton" type="button">Save</button>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="saveNewButton" type="button">Save as New</button>
-  <div dojoAttachPoint="selectedGoesHere"></div>
-  <div id="form" dojoAttachPoint="formGoesHere"></div>
-  </div>
-  
-  <div style="float:left;margin-left:10px">
-  <h1>Hints for selected lesson</h1>
-  <div id="hintGrid" dojoAttachPoint="hintGridGoesHere"></div>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="generateHintsButton" type="button">Generate Hints</button>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="removeHintButton" type="button">Remove Hint</button>
-  <button dojoType="dijit.form.Button" dojoAttachPoint="saveHintButton" type="button">Save</button>
-  </div>
+    
+    <h1>Lessons</h1>
+    <div id="lessonGrid" dojoAttachPoint="lessonGridGoesHere"></div>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="deleteLessonButton" type="button">Delete</button>
+    <!--<button dojoType="dijit.form.Button" dojoAttachPoint="editLessonButton" type="button">Edit</button>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="saveLessonButton" type="button">Save</button>
+    -->
+    <hr></hr>
+
+    <div style="float:left;">
+    <h1>Template Selection</h1>
+    <div id="grid" dojoAttachPoint="gridGoesHere"></div>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="deleteButton" type="button">Delete</button>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="newButton" type="button">New</button>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="editButton" type="button">Edit</button>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="saveButton" type="button">Save</button>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="saveNewButton" type="button">Save as Lesson</button>
+    <div dojoAttachPoint="selectedGoesHere"></div>
+    <div id="form" dojoAttachPoint="formGoesHere"></div>
+    </div>
+    
+    <div style="float:left;margin-left:10px">
+    <h1>Hints for selected Template</h1>
+    <div id="hintGrid" dojoAttachPoint="hintGridGoesHere"></div>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="generateHintsButton" type="button">Generate Hints</button>
+    <button dojoType="dijit.form.Button" dojoAttachPoint="removeHintButton" type="button">Remove Hint</button>
+    </div>
 </div>

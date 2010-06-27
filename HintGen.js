@@ -39,18 +39,20 @@ dojo.declare('unc.HintGen', [dijit._Widget, dijit._Templated], {
 	},
 	
 	submitJson: function() {
-		var callback = dojo.hitch(this, function() {
-			this.demoSave.fetch({query:{base:this.json.base}, onComplete: dojo.hitch(this, function(items) { 
-				dojo.forEach(items, function(item) { this.demoSave.deleteItem(item); }, this);
-				this.demoSave.newItem(this.json);
-				this.demoSave.save();
-				console.log("Saved to database");
-			}) 
-			});
-		});
-		//callback();
-		//do a dialog to save or not
-		this.raiseYesNoDialog("Submit as json?", "Submit these rules as a json file?", callback);
+//		var callback = dojo.hitch(this, function() {
+//			this.demoSave.fetch({query:{base:this.json.base}, onComplete: dojo.hitch(this, function(items) { 
+//				dojo.forEach(items, function(item) { this.demoSave.deleteItem(item); }, this);
+//				this.demoSave.newItem(this.json);
+//				this.demoSave.save();
+//				console.log("Saved to database");
+//			}) 
+//			});
+//		});
+//		callback();
+////		do a dialog to save or not
+//		this.raiseYesNoDialog("Submit as json?", "Submit these rules as a json file?", callback);
+	    dojo.publish('hints_ready', []);
+	    console.log("publish done");
 	},
 	
 	generateHints: function(word) {
@@ -73,7 +75,7 @@ dojo.declare('unc.HintGen', [dijit._Widget, dijit._Templated], {
 //		var num = this.at_num.value;
 		var num;
 		if(!num) {
-			num = 100;
+			num = 1000;
 		}
 		
 		//generate all possible words
@@ -140,23 +142,7 @@ dojo.declare('unc.HintGen', [dijit._Widget, dijit._Templated], {
 		this.hintsForAddOneLetter(words);
 		this.hintsForReplaceOneLetter(words);
 		
-//		var i = 0;
-//		while(words[i] != null) {
-//			if(words[i].hints.length > 0) {
-//				var out = this.at_output.attr('value') + '>> ' + i + ': ' + words[i].word + ' -> ';
-//				dojo.forEach(
-//						words[i].hints,
-//						function(hint) {
-//							out += '[' + hint + ']';
-//						});
-//				out += "\n";
-//				this.at_output.setValue(out);
-//			}
-//			i++;
-//		}
-		
 		return hints;
-		
 	},
 	
 	outputHints: function(words, base) {
