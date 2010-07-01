@@ -40,6 +40,7 @@
       dojo.require('dijit.form.TextBox');
       dojo.require('dijit.form.ComboBox');
       dojo.require('dijit.form.Button');
+      dojo.require('dijit.layout.TabContainer');
     </script>
     <script type="text/javascript" src="/libs/uow/trace.js"></script>
     <script type="text/javascript" src="/libs/uow.js"></script>
@@ -57,9 +58,12 @@
         <input type="text" name="schemaName" id="schemaName" dojoType="dijit.form.TextBox" />
         <button dojoType="dijit.form.Button" id="openButton">Open</button>
       </div>
-      <div dojoType="dijit.layout.ContentPane" region="center" splitter="false">
-        <pre id="schema">Schema will go here</pre>
-        <div id="myeditor">Editor will go here</div>
+      <div dojoType="dijit.layout.TabContainer" region="center" splitter="false">
+        <div id="myeditor" dojoType="dijit.layout.ContentPane" title="Editor">
+        </div>
+        <div dojoType="dijit.layout.ContentPane" title="Schema">
+          <pre id="schema">Schema will go here</pre>
+        </div>
       </div>
       <div dojoType="dijit.layout.ContentPane" region="bottom" splitter="false">bottom</div>
   </body>
