@@ -9,8 +9,49 @@ dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.NumberTextBox');
+dojo.require('dijit.form.Select');
 dojo.require('dijit.Editor');
 dojo.require('dijit.Tooltip');
+
+function EditRemove(text, start, stop) {
+    while (true) {
+        var i1 = text.indexOf(start);
+        console.log('i1', i1);
+        if (i1 < 0) {
+            break;
+        }
+        var i2 = text.indexOf(stop, i1);
+        console.log('i2', i2);
+        if (i2 > i1) {
+            text = text.slice(0, i1) + text.slice(i2+stop.length);
+        }
+    }
+    return text;
+}
+
+/* pasting from MS Word produces HORRIBLY huge html. This filter tries to fix that. */
+function EditorFilter(text) {
+    // get rid of comment
+    text = EditRemove(text, '<!--', '-->');
+    
+    // get rid of meta content
+    text = EditRemove(text, '<meta content', '/>');
+    
+    // get rid of style
+    text = EditRemove(text, '<style>', '</style>');
+    
+    // get rid of link
+    text = EditRemove(text, '<link', '</link>');
+    
+    // bash class tags
+    var pat = new RegExp(' class="[^"]*"', 'g');
+    text = text.replace(pat, '');
+    
+    // bash the o:p tags
+    text = text.replace(/<o:p>/g, '').replace(/<\/o:p>/g, '');
+    
+    return text;
+}
 
 dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
     schema: {}, // object describing the JSON schema for the object this form is to edit,
@@ -72,22 +113,42 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         var init = value || schema['default'] || '';
         var description = schema.description || '';
         var control;
-        if (schema.format == 'html') {
+        var filter = null;
+        if (format == 'html') {
             control = new dijit.Editor({
                 name: name,
                 value: init
             });
+            filter = EditorFilter;
         } else {
-            control = new dijit.form.Textarea({
-                name: name,
-                value: init,
-                baseClass: 'dijitTextBox dijitTextArea' // why do I need this?
-            });
+            if ('enum' in schema) {
+                var options = dojo.map(schema['enum'], function(e, i) {
+                    return { 
+                        value: e,
+                        label: e,
+                        selected: i === 0,
+                        disabled: false
+                    };
+                });
+                control = new dijit.form.Select({
+                    name: name,
+                    options: options
+                });
+            } else {
+                control = new dijit.form.Textarea({
+                    name: name,
+                    value: init,
+                    readOnly: 'readonly' in schema && schema['readonly'],
+                    baseClass: 'dijitTextBox dijitTextArea' // why do I need this?
+                });
+            }
         }
+        this.connect(control, 'onChange', 'onChange');
         var manager = new unc.FieldManager({
             theTitle: title,
             control: control,
-            description: description
+            description: description,
+            filter: filter
         });
         return manager;
     },
@@ -96,7 +157,6 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      * Generate an integer input control
      */
     generate_integer: function(name, schema, value) {
-        console.log('generate integer', schema, value);
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || 0;
@@ -113,6 +173,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             value: init,
             constraints: constraints
         });
+        this.connect(control, 'onChange', 'onChange');
         manager = new unc.FieldManager({
             theTitle: title,
             control: control,
@@ -125,7 +186,6 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      * Generate a number input control
      */
     generate_number: function(name, schema, value) {
-        console.log('generate number', schema, value);
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || 0;
@@ -142,6 +202,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             value: init,
             constraints: constraints
         });
+        this.connect(control, 'onChange', 'onChange');
         manager = new unc.FieldManager({
             theTitle: title,
             control: control,
@@ -154,7 +215,6 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      * Generate an array manager
      */
     generate_array: function(name, schema, value) {
-        //console.log('generate_array', name, schema, value);
         var title = schema.title || name;
         var init = value || schema['default'] || [];
         var description = schema.description || "";
@@ -196,7 +256,13 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             result = result[0];
         }
         return result;
-    }
+    },
+    
+    /**
+     * Signal any of the contained controls changing value
+     */
+     onChange: function() {
+     }
 
 });
 
@@ -284,6 +350,7 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
     name: "",
     theTitle: "",
     description: "",
+    filter: null, // you can supply a function to filter the value
 
     /**
      * Initialize the widget and connect up the tooltip
@@ -303,7 +370,11 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
      * Return the value of the enclosed control
      */
     _getValueAttr: function() {
-        return this.control.attr('value');
+        var value = this.control.attr('value');
+        if (this.filter) {
+            value = this.filter(value);
+        }
+        return value;
     },
 
     /**
