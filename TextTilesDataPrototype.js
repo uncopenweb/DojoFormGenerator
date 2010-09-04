@@ -1,7 +1,0 @@
-var TextTilesDataPrototype = { 
-		"name":"Lesson #",
-		"titleText":"A custom snippet of text",
-		"sideBarTitle":"Words you have guessed so far:",
-		"instructions":"<p>In the following activity, you will see a big word that has at least 7 letters in it. Your job will be to use that word to make as many new words as you can.  To do that, click on 3 or more of the letters in the big word to spell new words.  You can put the letters together in any combination, or you can use the same set of letters in a different order as long as you end up spelling a real word.</p><p>You will get 3 points for every word you make on your own, and 1 point for every word that you make after getting a hint.  See how many words you can write before the end of class.</p>",
-		"examples":"<p>Here is an example.  The letters p-l-a-n-e-t-s spell the word, planets. From that set of letters, you could make these words: plan, plans, set, ape, apes, net, nets, nest.  Those are just a few of the possibilities. </p><p>Now, take a look at the word below and see how many more words you can make from it.  Remember, you can click on the letters in any order, but all of your words need to have at least 3 letters.  If you get stuck, click on the “hint” button for ideas. </p>"
-}
