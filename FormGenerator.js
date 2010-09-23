@@ -126,7 +126,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
                     return { 
                         value: e,
                         label: e,
-                        selected: i === 0,
+                        selected: e == init,
                         disabled: false
                     };
                 });
