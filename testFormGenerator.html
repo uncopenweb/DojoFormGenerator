@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <title>Dojo Form Generator</title>
     <style type="text/css">
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dojo/resources/dojo.css";
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dijit/themes/tundra/tundra.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/resources/dojo.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dijit/themes/tundra/tundra.css";
       @import "FormGenerator.css";
 
     </style>
@@ -20,17 +20,35 @@
         };
     </script>
     <script type="text/javascript" 
-            src="http://ajax.googleapis.com/ajax/libs/dojo/1.4.1/dojo/dojo.xd.js"></script>
-    <script type="text/javascript" src="SpellBinderSchema.js"></script>
-    <script type="text/javascript" src="SpellBinderData.js"></script>
-    <script type="text/javascript" src="debug.js"></script>
+            src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/dojo.xd.js"></script>
+    <script type="text/javascript" src="/libs/uow/trace.js"></script>
     <script type="text/javascript">
       dojo.require('dojox.json.schema');
       dojo.require('unc.FormGenerator');
+      testSchema = {
+        title: 'Test Schema',
+        type: 'object',
+        properties: {
+            aString: {
+                type: 'string',
+                title: 'A String',
+                description: 'String input'
+            },
+            aBoolean: {
+                type: 'boolean',
+                title: 'A Boolean',
+                description: 'Boolean input'
+            }
+        }
+      };
+      testData = {
+        aString: 'string value',
+        aBoolean: true
+      };
     </script>
   </head>
   <body class="tundra">
-    <div dojoType="unc.FormGenerator" schema="SpellBinderSchema", initValue="SpellBinderData" jsID="myform"></div>
+    <div dojoType="unc.FormGenerator" schema="testSchema", initValue="testData" jsID="myform"></div>
   </body>
 </html>
 

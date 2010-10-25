@@ -9,6 +9,7 @@ dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.NumberTextBox');
+dojo.require('dijit.form.CheckBox');
 dojo.require('dijit.form.Select');
 dojo.require('dijit.Editor');
 dojo.require('dijit.Tooltip');
@@ -201,6 +202,26 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             name: name,
             value: init,
             constraints: constraints
+        });
+        this.connect(control, 'onChange', 'onChange');
+        manager = new unc.FieldManager({
+            theTitle: title,
+            control: control,
+            description: description
+        });
+        return manager;
+    },
+    
+    /**
+     * Generate a boolean input control
+     */
+    generate_boolean: function(name, schema, value) {
+        var title = schema.title || name;
+        var init = value || schema['default'] || 0;
+        var description = schema.description || '';
+        var control = new dijit.form.CheckBox({
+            name: name,
+            checked: init
         });
         this.connect(control, 'onChange', 'onChange');
         manager = new unc.FieldManager({
