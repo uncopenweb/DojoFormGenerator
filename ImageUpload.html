@@ -1,0 +1,28 @@
+<div class="ImageUpload">
+    <form id="upload_form" method="POST" enctype="multipart/form-data">
+        
+        <table>
+        <label>Tags: <input type="text" name="tags"></label>
+        </tr>
+        <tr>
+            <td><label>Description: </label></td>
+            <td><input type="text" name="description"></input></td>
+        </tr>
+        <tr>
+            <td><label>Title: </label></td>
+            <td><input type="text" name="title"></input></td>
+        </tr>
+        <tr>
+            <td><label>Credit URL: </label></td>
+            <td><input type="text" name="creditURL"></input></td>
+        </tr>
+        <tr>
+            <td><label>Choose File:</label><td>
+            <td><input type="file" name="file" id="file"></input><td/>
+        </tr>
+        </table>
+    </form>
+    <br/>
+    <button dojoType="dijit.form.Button" type="button" dojoAttachPoint="at_confirm">Confirm and Continue</button>
+    <button dojoType="dijit.form.Button" type="button" dojoAttachPoint="at_cancel">Cancel</button>
+</div>
