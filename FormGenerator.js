@@ -4,8 +4,8 @@ dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dijit._Container');
 
-dojo.require('unc.MediaSelector');
 dojo.require('unc.AudioSelector');
+dojo.require('unc.ImageSelector');
 
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.Textarea');
@@ -126,7 +126,11 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             filter = EditorFilter;
         } else if(format == 'audioMedia') {
             control = new unc.AudioSelector({
-               init: init 
+                init: init 
+            });
+        } else if(format == 'imageMedia') {
+            control = new unc.ImageSelector({
+                init: init
             });
         } else {
             if ('enum' in schema) {
