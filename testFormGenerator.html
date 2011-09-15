@@ -6,7 +6,10 @@
     <style type="text/css">
       @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/resources/dojo.css";
       @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dijit/themes/tundra/tundra.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/grid/resources/Grid.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/grid/resources/claroGrid.css";
       @import "FormGenerator.css";
+      @import "AudioBrowser.css";
 
     </style>
 
@@ -21,7 +24,9 @@
     </script>
     <script type="text/javascript" 
             src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/dojo.xd.js"></script>
+    <script type="text/javascript" src="/libs/uow.js"></script>
     <script type="text/javascript" src="/libs/uow/trace.js"></script>
+    <script src="NamingGameSchema.json"></script>
     <script type="text/javascript">
       dojo.require('dojox.json.schema');
       dojo.require('unc.FormGenerator');
@@ -29,26 +34,35 @@
         title: 'Test Schema',
         type: 'object',
         properties: {
+            aSound: {
+                type: 'string',
+                title: 'A Sound',
+                description: 'Sound Input',
+                format: 'audio'
+            },
             aString: {
                 type: 'string',
                 title: 'A String',
                 description: 'String input'
-            },
-            aBoolean: {
-                type: 'boolean',
-                title: 'A Boolean',
-                description: 'Boolean input'
             }
         }
       };
+      testSchema = mySchema;
       testData = {
         aString: 'string value',
-        aBoolean: true
+        aSound: "/Media/Audio/4cd856ac7885446793000035",
       };
+      dojo.ready(function() {
+        dojo.connect(dijit.byId('getValue'), 'onClick', function() {
+          console.log('value');
+          console.log(myform.get('value'));
+        });
+      });
     </script>
   </head>
   <body class="tundra">
     <div dojoType="unc.FormGenerator" schema="testSchema", initValue="testData" jsID="myform"></div>
+    <button id='getValue' dojoType="dijit.form.Button">Value</button>
   </body>
 </html>
 
