@@ -4,6 +4,7 @@ dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dijit._Container');
 
+dojo.require('unc.SayOrPlaySelector');
 dojo.require('unc.AudioSelector');
 dojo.require('unc.ImageSelector');
 
@@ -124,14 +125,25 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
                 value: init
             });
             filter = EditorFilter;
+
         } else if(format == 'audioMedia') {
             control = new unc.AudioSelector({
-                init: init 
+                name: name,
+                value: init 
             });
+
+        } else if(format == 'audio') {
+            control = new unc.SayOrPlaySelector({
+                name: name,
+                value: init
+            });
+
         } else if(format == 'imageMedia') {
             control = new unc.ImageSelector({
-                init: init
+                name: name,
+                value: init
             });
+
         } else {
             if ('enum' in schema) {
                 var options = dojo.map(schema['enum'], function(e, i) {

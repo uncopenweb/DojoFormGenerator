@@ -24,7 +24,7 @@
 }
 .uncFormGenerator label {
     text-align: right;
-    min-width: 6em;
+    /* min-width: 6em; */
     display: inline-block;
     font-weight: bold;
 }
@@ -75,3 +75,14 @@
     display: inline;
 }
 
+.SayOrPlaySelector label {
+    min-width: 0px;
+}
+
+.SayOrPlaySelector {
+    display: inline-block;
+}
+
+.AudioSelector {
+    display: inline-block;
+}

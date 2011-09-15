@@ -10,7 +10,7 @@ dojo.declare("unc.AudioSelector", [ dijit._Widget, dijit._Templated ], {
     templatePath: dojo.moduleUrl('unc', 'AudioSelector.html'),
     widgetsInTemplate: true,
     
-    init: '',
+    name: '', // the name of this variable
     value: '', //this is the URL
     disabled: false,
     
@@ -19,30 +19,11 @@ dojo.declare("unc.AudioSelector", [ dijit._Widget, dijit._Templated ], {
     
     postCreate: function() {
         
-        this.handle1 = this.connect(this.at_addSoundButton, 'onclick', this.showDialog);
-        this.handle2 = this.connect(this.at_playCurrentSoundButton, 'onclick', this.playSound);
+        this.handle1 = this.connect(this.at_addSoundButton, 'onClick', "showDialog");
+        this.handle2 = this.connect(this.at_playCurrentSoundButton, 'onClick', "playSound");
         
         //this should set the init value
-        if(this.init) {
-            console.log("starting init");
-        
-            uow.getDatabase({
-                database: 'Media',
-                collection: 'Audio'
-            }).then(dojo.hitch(this, function(db) {
-                db.fetch({
-                    query:{'URL':this.init}, 
-                    onComplete: dojo.hitch(this, function(items) {
-                        if(items.length > 0) {
-                            this.tags = items[0].tags;
-                            this.duration = items[0].duration;
-                        }
-                        
-                        this.setSoundValue(this.init, this.tags, this.duration);
-                    })
-                });
-            }));
-        }
+        this.set('value', this.value);
     
     },
     
@@ -79,7 +60,7 @@ dojo.declare("unc.AudioSelector", [ dijit._Widget, dijit._Templated ], {
     },
     
     playSound: function() {
-    
+        console.log('this should play', this.value);
         if(this.value) {
             dojo.publish('playAudio', [this.value]);
         }
@@ -91,22 +72,34 @@ dojo.declare("unc.AudioSelector", [ dijit._Widget, dijit._Templated ], {
     },
     
     _setDisabledAttr: function(value) {
-        if(value) {
-            dojo.style(this.at_addSoundButton, {
-                'opacity':0.4,
-                'cursor':'default'
-            });
-            dojo.style(this.at_playCurrentSoundButton, {
-                'opacity':0.4,
-                'cursor':'default'
-            });
-            
-            if(this.handle1)
-                this.disconnect(this.handle1);
-            if(this.handle2)
-                this.disconnect(this.handle2);
-            
-            console.log('default style done');
+        console.log('AS disable', value);
+        dojo.query("[widgetId]", this.domNode).forEach(function(childNode) {
+            var child = dijit.byId(dojo.attr(childNode, 'widgetid'));
+            child.set('disabled', value);
+        });
+    },
+
+    _setValueAttr: function(value) {
+        this.value = value;
+        if(this.value) {
+            console.log("starting init");
+        
+            uow.getDatabase({
+                database: 'Media',
+                collection: 'Audio'
+            }).then(dojo.hitch(this, function(db) {
+                db.fetch({
+                    query:{'URL':this.value}, 
+                    onComplete: dojo.hitch(this, function(items) {
+                        if(items.length > 0) {
+                            this.tags = items[0].tags;
+                            this.duration = items[0].duration;
+                        }
+                        
+                        this.setSoundValue(this.value, this.tags, this.duration);
+                    })
+                });
+            }));
         }
     }
 
