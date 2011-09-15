@@ -10,8 +10,8 @@ dojo.require('unc.ImageBrowser');
 dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
     templatePath: dojo.moduleUrl('unc', 'ImageSelector.html'),
     widgetsInTemplate: true,
-    
-    init: '',
+
+    name: '', // name of the control
     value: '', //this is the URL
     disabled: false,
     
@@ -23,7 +23,7 @@ dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
         this.handle1 = this.connect(this.at_addImageButton, 'onclick', this.showBrowseDialog);  
         this.handle2 = this.connect(this.at_previewImageButton, 'onclick', this.previewImage);
     
-        if(this.init) {
+        if(this.value) {
             console.log("starting init");
         
             uow.getDatabase({
@@ -31,14 +31,14 @@ dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
                 collection: 'Image'
             }).then(dojo.hitch(this, function(db) {
                 db.fetch({
-                    query:{'URL':this.init}, 
+                    query:{'URL':this.value}, 
                     onComplete: dojo.hitch(this, function(items) {
                         if(items.length > 0) {
                             this.tags = items[0].tags;
                             this.title = items[0].title;
                         }
                         
-                        this.setImageValue(this.init, this.tags, this.title);
+                        this.setImageValue(this.value, this.tags, this.title);
                     })
                 });
             }));
@@ -100,22 +100,10 @@ dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
     },
     
     _setDisabledAttr: function(value) {
-        if(value) {
-            dojo.style(this.at_addImageButton, {
-                'opacity':0.4,
-                'cursor':'default'
-            });
-            dojo.style(this.at_previewImageButton, {
-                'opacity':0.4,
-                'cursor':'default'
-            });
-            
-            if(this.handle1)
-                this.disconnect(this.handle1);
-            if(this.handle2)
-                this.disconnect(this.handle2);
-                
-        }
+        dojo.query("[widgetId]", this.domNode).forEach(function(childNode) {
+            var child = dijit.byId(dojo.attr(childNode, 'widgetid'));
+            child.set('disabled', value);
+        });
     }
     
 });
