@@ -4,12 +4,16 @@
     <meta charset="utf-8" />
     <title>Dojo Form Generator</title>
     <style type="text/css">
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/resources/dojo.css";
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dijit/themes/tundra/tundra.css";
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/grid/resources/Grid.css";
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/grid/resources/claroGrid.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/resources/dojo.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/grid/resources/Grid.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/grid/resources/claroGrid.css";
       @import "FormGenerator.css";
       @import "AudioBrowser.css";
+
+      body {
+        padding: 10px;
+      }
 
     </style>
 
@@ -23,10 +27,11 @@
         };
     </script>
     <script type="text/javascript" 
-            src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/dojo.xd.js"></script>
+            src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js"></script>
     <script type="text/javascript" src="/libs/uow.js"></script>
     <script type="text/javascript" src="/libs/uow/trace.js"></script>
     <script src="NamingGameSchema.json"></script>
+    <script src="Name_That_Animal.json"></script>
     <script type="text/javascript">
       dojo.require('dojox.json.schema');
       dojo.require('unc.FormGenerator');
@@ -52,6 +57,7 @@
         aString: 'string value',
         aSound: "/Media/Audio/4cd856ac7885446793000035",
       };
+      testData = myData;
       dojo.ready(function() {
         dojo.connect(dijit.byId('getValue'), 'onClick', function() {
           console.log('value');

@@ -3,7 +3,7 @@
 @import "ImageBrowser.css";
 
 .uncFormGenerator fieldset {
-    margin: 0 0 1em 1em;
+    margin: 0 0 1em 0em;
     padding: 0em 1em 1em 1em;
     border: 1px solid black;
     display: inline-block;
@@ -23,14 +23,15 @@
     padding: 0 2px;
 }
 .uncFormGenerator label {
-    text-align: right;
+    /* text-align: right; */
     /* min-width: 6em; */
     display: inline-block;
     font-weight: bold;
 }
+/*
 .uncArrayManager + .uncFieldManager {
-    margin: 2em 0 2em 2.3em;
-}
+    margin: 1em 0;
+} */
 .uncFormGenerator .dijitTextArea {
     width: 40em;
 }
@@ -68,7 +69,7 @@
     float: none;
 }
 .uncFieldManager {
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 }
 .uncFieldManager #container {
     vertical-align: top;
@@ -86,3 +87,15 @@
 .AudioSelector {
     display: inline-block;
 }
+
+.uncArrayGridManager .AGMControls {
+    display: inline-block;
+    vertical-align: top;
+    /* width: 150px;*/
+}
+
+.uncArrayGridManager .AGMEditor {
+    display: inline-block;
+}
+
+.dojoxGridMasterHeader { display: none; }

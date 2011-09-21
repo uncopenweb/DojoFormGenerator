@@ -28,7 +28,7 @@ dojo.declare("unc.SayOrPlaySelector", [ dijit._Widget, dijit._Templated ], {
         var say = this.checkType(this.value) == 'say';
         this.SPsaybutton.set('value', say);
         this.SPplaybutton.set('value', !say);
-        console.log('postCreate', say, this.value);
+        //console.log('postCreate', say, this.value);
         if (say) {
             this.SPsay.set('value', this.value);
             this.SPplay.set('value', '');
@@ -36,6 +36,9 @@ dojo.declare("unc.SayOrPlaySelector", [ dijit._Widget, dijit._Templated ], {
             this.SPsay.set('value', '');
             this.SPplay.set('value', this.value);
         }
+
+        this.connect(this.SPsay, 'onChange', 'onChange');
+        this.connect(this.SPplay, 'onChange', 'onChange');
     },
 
     checkType: function(str) {
@@ -47,14 +50,15 @@ dojo.declare("unc.SayOrPlaySelector", [ dijit._Widget, dijit._Templated ], {
     },
 
     radioChange: function(which, v) {
-        console.log('radioChange', which, v);
+        //console.log('radioChange', which, v);
         var ctrl = { say: this.SPsay, play: this.SPplay }[which];
-        console.log('ctrl', ctrl);
+        //console.log('ctrl', ctrl);
         if (v) {
             dojo.style(ctrl.domNode, 'display', '');
         } else {
             dojo.style(ctrl.domNode, 'display', 'none');
         }
+        this.onChange(this._getValueAttr());
     },
 
     _getValueAttr: function() {
@@ -66,11 +70,14 @@ dojo.declare("unc.SayOrPlaySelector", [ dijit._Widget, dijit._Templated ], {
     },
 
     _setDisabledAttr: function(value) {
-        console.log('SP disable', value);
+        //console.log('SP disable', value);
         dojo.query("[widgetId]", this.domNode).forEach(function(childNode) {
             var child = dijit.byNode(childNode);
-            console.log('child', child, childNode);
+            //console.log('child', child, childNode);
             child.set('disabled', value);
         });
-    } 
+    },
+
+    onChange: function() {
+    }
 });
