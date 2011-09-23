@@ -99,3 +99,7 @@
 }
 
 .dojoxGridMasterHeader { display: none; }
+
+.AudioSearchUpload label {
+    line-height: 2.5em;
+}
