@@ -1,5 +1,5 @@
 mySchema = {
-    "title":"NamingGame",
+    "title":"Naming Game",
     "description":"This form allows you to create and edit your own Naming Game.",
     "type":"object",
     "properties": {
@@ -18,6 +18,7 @@ mySchema = {
             "type":"array",
             "description": "Question prompts may be text to speak or a sound to play.",
             "title": "Questions",
+            "minItems": 1,
             "items" : {
                 "type" : "string",
                 "description" : "Enter a question.",
@@ -28,6 +29,8 @@ mySchema = {
             "type": "array",
             "description": "Things to say between rounds.",
             "title":"Between Rounds",
+            "minItems": 1,
+            "default": [ "Now try these." ],
             "items": {
                 "type":"string",
                 "description" : "Enter a sentence to put between rounds."
@@ -55,6 +58,7 @@ mySchema = {
             "type": "array",
             "description": "The game content. The 'things' that will be named.",
             "title": "Things",
+            "format": "grid",
             "items": {
                 "type": "object",
                 "description": "An individual thing.",
@@ -63,7 +67,7 @@ mySchema = {
                     "Name": {
                         "type":"string",
                         "description": "The name of the thing.",
-                        "title":"Thing Name"
+                        "title":"Name"
                     },
                     "Prompt": {
                         "type":"array",
@@ -77,8 +81,8 @@ mySchema = {
                     },
                    "Answer": {
                         "type":"array",
-                        "description":"I think this was deprecated?",
-                        "title":"Answer",
+                        "description":"Specify the answer associated with this thing. The default is the same as the Name but you could play a sound here instead.",
+                        "title":"Answers",
                         "items": {
                             "type" : "string",
                             "description" : "An answer",

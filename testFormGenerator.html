@@ -8,8 +8,8 @@
       @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css";
       @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/grid/resources/Grid.css";
       @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/grid/resources/claroGrid.css";
+      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/form/resources/FileInput.css";
       @import "FormGenerator.css";
-      @import "AudioBrowser.css";
 
       body {
         padding: 10px;
@@ -22,6 +22,7 @@
             isDebug: false,
             parseOnLoad: true,
             baseUrl: './',
+            dojoBlankHtmlUrl: './blank.html',
             // map local widget namespaces -> paths relative to baseUrl
             modulePaths: {'unc' : '.'}
         };
