@@ -21,7 +21,7 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.Editor');
 dojo.require('dijit.Tooltip');
 dojo.require('dojox.grid.DataGrid');
-dojo.require('unc.ArrayStore');
+dojo.require('dojo.data.ItemFileWriteStore');
 
 function EditRemove(text, start, stop) {
     while (true) {

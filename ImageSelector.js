@@ -3,9 +3,19 @@ dojo.provide("unc.ImageSelector");
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 dojo.require('dijit.form.TextBox');
+dojo.require('dijit.form.Button');
 dojo.require('dojox.image.Lightbox');
 
 dojo.require('unc.ImageBrowser');
+
+// a store singleton for use by all of these
+dojo.ready(function() {
+    unc._ImageMediaStore = uow.getDatabase({
+        database: 'Media',
+        collection: 'Image',
+        mode: 'rc'
+    });
+});
 
 dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
     templatePath: dojo.moduleUrl('unc', 'ImageSelector.html'),
@@ -20,16 +30,13 @@ dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
     
     postCreate: function() {
     
-        this.handle1 = this.connect(this.at_addImageButton, 'onclick', this.showBrowseDialog);  
-        this.handle2 = this.connect(this.at_previewImageButton, 'onclick', this.previewImage);
+        this.connect(this.add, 'onClick', this.showBrowseDialog);  
+        this.connect(this.preview, 'onClick', this.previewImage);
     
         if(this.value) {
             console.log("starting init");
         
-            uow.getDatabase({
-                database: 'Media',
-                collection: 'Image'
-            }).then(dojo.hitch(this, function(db) {
+            dojo.when(unc._ImageMediaStore, dojo.hitch(this, function(db) {
                 db.fetch({
                     query:{'URL':this.value}, 
                     onComplete: dojo.hitch(this, function(items) {
@@ -51,7 +58,7 @@ dojo.declare("unc.ImageSelector", [ dijit._Widget, dijit._Templated ], {
         var imageBrowser = new unc.ImageBrowser();
     
         var dialog = new dijit.Dialog({
-            title: "Search for and Select a sound!",
+            title: "Select an Image",
             content: [imageBrowser.domNode]
         });
         
