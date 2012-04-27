@@ -78,10 +78,26 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
     },
 
     /**
+     * Sorts an flat object based on a "position" attribute
+     */
+    sort: function(obj){
+        var tmp = [], x;
+        for( x in obj.properties)
+            tmp.push([x,obj.properties[x].position]);
+        tmp.sort(function(a,b) {return a[1]-b[1];});
+        var neworder = {}, l = tmp.length, i;
+        for( i=0; i<l; i++) neworder[tmp[i][0]] = obj.properties[tmp[i][0]];
+        obj.properties = neworder;
+    },
+
+    /**
      * Generate controls for the given schema initialized with value, called recursively
      */
     generate: function(name, schema, value) {
         //console.log('generate', name, schema, value);
+        // Sort pased on 'position' attr
+        if(schema.type == 'object')
+            this.sort(schema);
         // determine the method to call by introspection
         var type = schema.type;
         var method = 'generate_' + type;
