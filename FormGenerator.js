@@ -273,6 +273,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         manager = new unc.FieldManager({
             theTitle: title,
             control: control,
+            inline:true,
             description: description
         });
         return manager;
@@ -565,6 +566,7 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
     widgetsInTemplate: true,
 
     control: null,
+    inline: false,
     name: "",
     theTitle: "",
     description: "",
@@ -583,6 +585,8 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
                 label: this.description});
         }
         this.connect(this.control, 'onChange', 'onChange');
+        if(!this.inline)
+            dojo.create("br",{},this.label,"after");
     },
 
     /**

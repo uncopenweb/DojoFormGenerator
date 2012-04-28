@@ -2,13 +2,21 @@
   <fieldset>
     <legend>${theTitle}</legend>
     <p class="description">${description}</p>
-    <div class="AGMControls">
-      <button dojoAttachPoint="addButton" dojoType="dijit.form.Button">Add</button>
-      <button dojoAttachPoint="deleteButton" dojoType="dijit.form.Button">Delete</button>
-      <div dojoAttachPoint="gridNode" style="height:200px"></div>
-    </div>
-    <div dojoAttachPoint="editorNode" class="AGMEditor">
-      <p>The editor will appear here.</p>
-    </div>
+    <table>
+        <tr>
+            <td class="AGMControlsContainer">
+                <div class="AGMControls">
+                  <button dojoAttachPoint="addButton" dojoType="dijit.form.Button">Add</button>
+                  <button dojoAttachPoint="deleteButton" dojoType="dijit.form.Button">Delete</button>
+                  <div dojoAttachPoint="gridNode" style="height:200px"></div>
+                </div>
+            </td>
+            <td class="AGMEditorContainer">
+                <div dojoAttachPoint="editorNode" class="AGMEditor">
+                  <p>The editor will appear here.</p>
+                </div>
+            </td>
+        </tr>
+    </table>
   </fieldset>
 </div>

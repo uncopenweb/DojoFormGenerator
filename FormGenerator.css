@@ -32,7 +32,8 @@
     margin: 1em 0;
 } */
 .uncFormGenerator .dijitTextArea {
-    width: 40em;
+    width: 20em;
+    font-size:16px;
 }
 .uncFormGenerator .dijitTextAreaDisabled {
     background: url("images/buttonDisabled.png") repeat-x scroll left top #FFF;
@@ -62,10 +63,14 @@
 .uncFormGenerator .arrayControl {
     float: right;
     cursor: pointer;
+    position:relative;
+    left:6px;
 }
 .uncFieldManager .arrayControl {
     display: inline;
     float: none;
+    position:relative;
+    top:4px;
 }
 .uncFieldManager {
     margin-bottom: 1em;
@@ -81,16 +86,21 @@
 
 .SayOrPlaySelector {
     display: inline-block;
+    width:27em;
 }
 
 .AudioSelector {
     display: inline-block;
 }
 
+.uncArrayGridManager .AGMControlsContainer{
+    width:145px;
+    vertical-align:top;
+}
+
 .uncArrayGridManager .AGMControls {
     display: inline-block;
     vertical-align: top;
-    /* width: 150px;*/
 }
 
 .uncArrayGridManager .AGMEditor {
