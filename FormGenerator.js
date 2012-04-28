@@ -356,6 +356,7 @@ dojo.declare('unc.ArrayGridManager', [ dijit._Widget  , dijit._Templated ], {
         }
         // connect up the buttons
         this.connect(this.addButton, 'onClick', 'addItem');
+        this.connect(this.deleteButton, 'onClick', 'deleteItem');
         this.connect(this.grid, 'onRowClick', dojo.hitch(this, function(e) {
             var selected = this.grid.selection.getSelected()[0];
             this.showEditor(selected);
@@ -378,6 +379,17 @@ dojo.declare('unc.ArrayGridManager', [ dijit._Widget  , dijit._Templated ], {
         //console.log('addItem', item);
         this.showEditor(item);
         this.showItem();
+    },
+    
+    deleteItem: function(){
+        this.store.deleteItem(this.toEdit);
+        var first = this.grid.getItem(0);
+        if(first){
+            this.showEditor(first);
+            this.showItem();
+        }else{
+            this.addItem();
+        }
     },
 
     showItem: function() {
@@ -475,6 +487,7 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
         this.connect(button, 'onclick', function() {
             item.destroyRecursive();
             this.renumber();
+            this.onChange();
         });
         dojo.place(item.domNode, this.containerNode, 'last');
         item.arrayIndex.innerHTML = N;
