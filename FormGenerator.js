@@ -3,7 +3,10 @@ dojo.provide('unc.FormGenerator');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dijit._Container');
-
+dojo.require('dijit.layout._LayoutWidget');
+dojo.require('unc.SayOrPlaySelector');
+dojo.require('unc.AudioSelector');
+dojo.require('unc.ImageSelector');
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.Button');
@@ -11,18 +14,20 @@ dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.NumberTextBox');
 dojo.require('dijit.form.CheckBox');
 dojo.require('dijit.form.Select');
+dojo.require('dijit.layout.BorderContainer');
+dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.Editor');
 dojo.require('dijit.Tooltip');
+dojo.require('dojox.grid.DataGrid');
+dojo.require('dojo.data.ItemFileWriteStore');
 
 function EditRemove(text, start, stop) {
     while (true) {
         var i1 = text.indexOf(start);
-        console.log('i1', i1);
         if (i1 < 0) {
             break;
         }
         var i2 = text.indexOf(stop, i1);
-        console.log('i2', i2);
         if (i2 > i1) {
             text = text.slice(0, i1) + text.slice(i2+stop.length);
         }
@@ -67,17 +72,36 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
         var w = this.generate('formContent', this.schema, this.initValue);
         dojo.addClass(this.containerNode, 'uncFormGenerator');
         dojo.place(w.domNode, this.containerNode);
+        w.startup();
+    },
+
+    /**
+     * Sorts an flat object based on a "position" attribute
+     */
+    sort: function(obj){
+        var tmp = [], x;
+        for( x in obj.properties)
+            tmp.push([x,obj.properties[x].position]);
+        tmp.sort(function(a,b) {return a[1]-b[1];});
+        var neworder = {}, l = tmp.length, i;
+        for( i=0; i<l; i++) neworder[tmp[i][0]] = obj.properties[tmp[i][0]];
+        obj.properties = neworder;
     },
 
     /**
      * Generate controls for the given schema initialized with value, called recursively
      */
     generate: function(name, schema, value) {
+        //console.log('generate', name, schema, value);
+        // Sort pased on 'position' attr
+        if(schema.type == 'object')
+            this.sort(schema);
         // determine the method to call by introspection
         var type = schema.type;
         var method = 'generate_' + type;
         if (method in this) {
-            return this[method](name, schema, value);
+            var r = this[method](name, schema, value);
+            return r;
         } else {
             console.log('FormGenerator: no method', method);
         }
@@ -109,6 +133,7 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      * Generate a string input control
      */
     generate_string: function(name, schema, value) {
+        //console.log('generate_string', name, schema, value);
         var title = schema.title || name;
         var format = schema.format || 'text';
         var init = value || schema['default'] || '';
@@ -121,6 +146,25 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
                 value: init
             });
             filter = EditorFilter;
+
+        } else if(format == 'audioMedia') {
+            control = new unc.AudioSelector({
+                name: name,
+                value: init 
+            });
+
+        } else if(format == 'audio') {
+            control = new unc.SayOrPlaySelector({
+                name: name,
+                value: init
+            });
+
+        } else if(format == 'imageMedia') {
+            control = new unc.ImageSelector({
+                name: name,
+                value: init
+            });
+
         } else {
             if ('enum' in schema) {
                 var options = dojo.map(schema['enum'], function(e, i) {
@@ -136,21 +180,24 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
                     options: options
                 });
             } else {
+                //console.log(1, name, init);
                 control = new dijit.form.Textarea({
                     name: name,
                     value: init,
                     readOnly: 'readonly' in schema && schema['readonly'],
                     baseClass: 'dijitTextBox dijitTextArea' // why do I need this?
                 });
+                //console.log(2);
             }
         }
-        this.connect(control, 'onChange', 'onChange');
+        //console.log('creating FieldManager');
         var manager = new unc.FieldManager({
             theTitle: title,
             control: control,
             description: description,
             filter: filter
         });
+        //console.log('generate_string returns', manager);
         return manager;
     },
 
@@ -174,7 +221,6 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             value: init,
             constraints: constraints
         });
-        this.connect(control, 'onChange', 'onChange');
         manager = new unc.FieldManager({
             theTitle: title,
             control: control,
@@ -203,7 +249,6 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             value: init,
             constraints: constraints
         });
-        this.connect(control, 'onChange', 'onChange');
         manager = new unc.FieldManager({
             theTitle: title,
             control: control,
@@ -223,10 +268,10 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
             name: name,
             checked: init
         });
-        this.connect(control, 'onChange', 'onChange');
         manager = new unc.FieldManager({
             theTitle: title,
             control: control,
+            inline:true,
             description: description
         });
         return manager;
@@ -237,32 +282,23 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      */
     generate_array: function(name, schema, value) {
         var title = schema.title || name;
-        var init = value || schema['default'] || [];
+        var default_value = schema['default'] || [];
+        var init = value || default_value;
         var description = schema.description || "";
-        var manager = new unc.ArrayManager({
+        var format = schema.format || 'list';
+        var minItems = schema.minItems || 0;
+        var managerClass = format == 'grid' ? unc.ArrayGridManager : unc.ArrayManager;
+        //console.log('generate_array', name, schema, default_value, init);
+        var manager = new managerClass({
             name: name,
             theTitle: title,
-            description: description
+            description: description,
+            generator: dojo.hitch(this, function(init) {
+                return this.generate(title, schema.items, init);
+            }),
+            init: init,
+            minItems: minItems
         });
-        // create an empty model item
-        var item = this.generate(title, schema.items, null);
-        // insert its add button
-        var button = dojo.create('img', {src: "images/add.png", width: "16", height: "16",
-            title: "Click to add a new " + title + "." }, item.arrayControl);
-        this.connect(button, 'onclick', function() {
-            var item = this.generate(title, schema.items, null);
-            manager.addItem(item);
-        });
-        // the model is disabled
-        item.attr('disabled', true);
-        // insert it into the manager
-        manager.addChild(item);
-
-        // now generate the real nodes
-        for (var i=0; i < init.length; i++) {
-            item = this.generate(title, schema.items, init[i]);
-            manager.addItem(item);
-        }
         return manager;
     },
 
@@ -283,7 +319,133 @@ dojo.declare('unc.FormGenerator', [ dijit.form.Form ], {
      * Signal any of the contained controls changing value
      */
      onChange: function() {
+         //console.log('onChange called');
      }
+
+});
+
+dojo.declare('unc.ArrayGridManager', [ dijit._Widget  , dijit._Templated ], {
+    templatePath: dojo.moduleUrl("unc", "ArrayGridManager.html"),
+    widgetsInTemplate: true,
+
+    name: "",
+    theTitle: "",
+    description: "",
+    generator: null,
+    minItems: 0,
+    init: [],
+
+    postCreate: function() {
+        this.inherited(arguments);
+
+        this.store = new dojo.data.ItemFileWriteStore({
+            identifier: 'id',
+            data: {
+                items: []
+            }
+        });
+        this.grid = new dojox.grid.DataGrid({
+            store: this.store,
+            structure: [ { name: 'Name', field: 'Name', width: '100%' } ],
+            sortInfo: 1
+        }, this.gridNode);
+        // insert the initial content
+        for (var i=0; i < this.init.length; i++) {
+            var it = this.init[i];
+            var n = this.store.newItem({ Name: it.Name, Value: it });
+        }
+        // connect up the buttons
+        this.connect(this.addButton, 'onClick', 'addItem');
+        this.connect(this.deleteButton, 'onClick', 'deleteItem');
+        this.connect(this.grid, 'onRowClick', dojo.hitch(this, function(e) {
+            var selected = this.grid.selection.getSelected()[0];
+            this.showEditor(selected);
+        }));
+        if (this.init.length > 0) {
+            var first = this.grid.getItem(0);
+            this.showEditor(first);
+            this.showItem();
+        } else {
+            this.addItem();
+        }
+    },
+
+    addItem: function() {
+        //console.log('addItem');
+        var item = this.store.newItem({
+            Name: '...',
+            Value: {}
+        });
+        //console.log('addItem', item);
+        this.showEditor(item);
+        this.showItem();
+    },
+    
+    deleteItem: function(){
+        this.store.deleteItem(this.toEdit);
+        var first = this.grid.getItem(0);
+        if(first){
+            this.showEditor(first);
+            this.showItem();
+        }else{
+            this.addItem();
+        }
+    },
+
+    showItem: function() {
+        var index = this.grid.getItemIndex(this.toEdit);
+        //console.log('showEditor', index);
+        this.grid.selection.select(index);
+        setTimeout(dojo.hitch(this, function() {
+            this.grid.scrollToRow(index);
+        }, 100));
+    },
+
+    showEditor: function(toEdit) {
+        if (this.toEdit === toEdit) {
+            return;
+        }
+        this.toEdit = toEdit;
+        myGrid = this.grid;
+        var value = this.store.getValue(toEdit, 'Value');
+
+        this.itemEditor = this.generator(value);
+        dojo.place(this.itemEditor.domNode, this.editorNode, 'only');
+        this.connect(this.itemEditor, 'onChange', 'onChange');
+    },
+
+    _getValueAttr: function() {
+        //console.log('getValue', this);
+        if (!this.hasOwnProperty('store')) return [];
+
+        var res = [];
+        this.store.fetch({
+            onItem: dojo.hitch(this, function(item) {
+                res.push(this.store.getValue(item, 'Value'))
+            })
+        });
+        return res;
+    },
+
+    startup: function() {
+        this.grid.startup();
+    },
+
+    onChange: function() {
+        //console.log('array g change', this.name);
+        var newValue = this.itemEditor.get('value');
+        //console.log('newValue', newValue);
+        //console.log('toEdit', this.toEdit);
+        var oldName = this.toEdit.Name;
+        this.store.setValue(this.toEdit, 'Value', newValue);
+        this.store.setValue(this.toEdit, 'Name', newValue.Name);
+        if (oldName != newValue.Name) {
+            // resort
+            this.grid.setSortInfo(1);
+            this.showItem();
+        }
+            
+    }
 
 });
 
@@ -294,6 +456,25 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
     name: "",
     theTitle: "",
     description: "",
+    generator: null,
+    minItems: 0,
+    init: [],
+
+    postCreate: function(args) {
+        this.inherited(arguments);
+
+        this.addButton.set('label', 'Add ' + this.theTitle);
+        this.connect(this.addButton, 'onClick', function() {
+            var item = this.generator(null);
+            this.addItem(item);
+        });
+
+        // now generate the initial nodes
+        for (var i=0; i < Math.max(this.minItems, this.init.length); i++) {
+            item = this.generator(this.init[i]);
+            this.addItem(item);
+        }
+    },
 
     /**
      * Add an item to the array and decorate it with the array controls
@@ -306,10 +487,11 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
         this.connect(button, 'onclick', function() {
             item.destroyRecursive();
             this.renumber();
+            this.onChange();
         });
-        dojo.place(item.domNode, children[N-1].domNode, 'before');
+        dojo.place(item.domNode, this.containerNode, 'last');
         item.arrayIndex.innerHTML = N;
-        children[N-1].arrayIndex.innerHTML = N+1;
+        this.connect(item, 'onChange', 'onChange');
     },
 
     /**
@@ -317,7 +499,7 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
      */
     renumber: function(item) {
         dojo.forEach(this.getChildren(), function(item, index) {
-            item.arrayIndex.innerHTML = index+1;
+            item.arrayIndex.innerHTML = index;
         });
     },
 
@@ -326,9 +508,17 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
      */
     _getValueAttr: function() {
         var children = this.getChildren();
-        children.pop(); // the last one is the dummy example
         var result = dojo.map(children, function(child) { return child.attr('value'); }, this);
         return result;
+    },
+
+    startup: function() {
+        dojo.forEach(this.getChildren(), function(child) {
+            child.startup(); });
+    },
+
+    onChange: function() {
+        //console.log('array change', this.name);
     }
 
 });
@@ -340,6 +530,15 @@ dojo.declare('unc.ObjectManager', [ dijit._Widget, dijit._Templated, dijit._Cont
     name: "",
     theTitle: "",
     description: "",
+
+    postCreate: function() {
+        this.inherited(arguments);
+    },
+
+    addChild: function(child) {
+        this.inherited(arguments);
+        this.connect(child, 'onChange', 'onChange');
+    },
 
     /**
      * Return the object's value
@@ -360,6 +559,16 @@ dojo.declare('unc.ObjectManager', [ dijit._Widget, dijit._Templated, dijit._Cont
         dojo.forEach(this.getChildren(), function(child) {
             child.attr('disabled', value);
         });
+    },
+
+    startup: function() {
+        dojo.forEach(this.getChildren(), function(child) {
+            child.startup();
+        });
+    },
+
+    onChange: function() {
+        //console.log('object Change', this.name);
     }
 });
 
@@ -368,6 +577,7 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
     widgetsInTemplate: true,
 
     control: null,
+    inline: false,
     name: "",
     theTitle: "",
     description: "",
@@ -385,6 +595,9 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
                 connectId: [ this.control.domNode ], 
                 label: this.description});
         }
+        this.connect(this.control, 'onChange', 'onChange');
+        if(!this.inline)
+            dojo.create("br",{},this.label,"after");
     },
 
     /**
@@ -403,5 +616,13 @@ dojo.declare('unc.FieldManager', [ dijit._Widget, dijit._Templated, dijit._Conta
      */
     _setDisabledAttr: function(value) {
         this.control.attr('disabled', value);
+    },
+
+    startup: function() {
+        this.control.startup();
+    }, 
+
+    onChange: function() {
+        //console.log('Field change', this.name);
     }
 });

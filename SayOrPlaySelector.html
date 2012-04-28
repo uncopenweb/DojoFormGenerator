@@ -1,0 +1,15 @@
+<div class="SayOrPlaySelector">
+  <label>
+    <input type="radio" dojoType="dijit.form.RadioButton" name="${id}_name"
+           dojoattachpoint="SPsaybutton" checked />
+    say
+  </label>
+  <label>
+    <input type="radio" dojoType="dijit.form.RadioButton" name="${id}_name"
+           dojoattachpoint="SPplaybutton" />
+    play
+  </label>
+  <input type="text" dojoType="dijit.form.TextBox" dojoattachpoint='SPsay' 
+         title="text to speak" style="width:20em" />
+  <div dojoType="unc.AudioSelector" dojoattachpoint='SPplay'></div>
+</div>

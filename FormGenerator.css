@@ -1,5 +1,8 @@
+@import "ImageSelector.css";
+@import "ImageBrowser.css";
+
 .uncFormGenerator fieldset {
-    margin: 0 0 1em 1em;
+    margin: 0 0 1em 0em;
     padding: 0em 1em 1em 1em;
     border: 1px solid black;
     display: inline-block;
@@ -19,16 +22,18 @@
     padding: 0 2px;
 }
 .uncFormGenerator label {
-    text-align: right;
-    min-width: 6em;
+    /* text-align: right; */
+    /* min-width: 6em; */
     display: inline-block;
     font-weight: bold;
 }
+/*
 .uncArrayManager + .uncFieldManager {
-    margin: 2em 0 2em 2.3em;
-}
+    margin: 1em 0;
+} */
 .uncFormGenerator .dijitTextArea {
-    width: 40em;
+    width: 20em;
+    font-size:16px;
 }
 .uncFormGenerator .dijitTextAreaDisabled {
     background: url("images/buttonDisabled.png") repeat-x scroll left top #FFF;
@@ -58,16 +63,52 @@
 .uncFormGenerator .arrayControl {
     float: right;
     cursor: pointer;
+    position:relative;
+    left:6px;
 }
 .uncFieldManager .arrayControl {
     display: inline;
     float: none;
+    position:relative;
+    top:4px;
 }
 .uncFieldManager {
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 }
 .uncFieldManager #container {
     vertical-align: top;
     display: inline;
 }
 
+.SayOrPlaySelector label {
+    min-width: 0px;
+}
+
+.SayOrPlaySelector {
+    display: inline-block;
+    width:27em;
+}
+
+.AudioSelector {
+    display: inline-block;
+}
+
+.uncArrayGridManager .AGMControlsContainer{
+    width:145px;
+    vertical-align:top;
+}
+
+.uncArrayGridManager .AGMControls {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.uncArrayGridManager .AGMEditor {
+    display: inline-block;
+}
+
+.dojoxGridMasterHeader { display: none; }
+
+.AudioSearchUpload label {
+    line-height: 2.5em;
+}
