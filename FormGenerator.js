@@ -488,7 +488,7 @@ dojo.declare('unc.ArrayManager', [ dijit._Widget, dijit._Templated, dijit._Conta
      */
     renumber: function(item) {
         dojo.forEach(this.getChildren(), function(item, index) {
-            item.arrayIndex.innerHTML = index+1;
+            item.arrayIndex.innerHTML = index;
         });
     },
 
