@@ -1,0 +1,5 @@
+@import "http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/image/resources/Lightbox.css";
+
+#dojoxLightboxDialog_underlay { 
+    background:blue;
+}

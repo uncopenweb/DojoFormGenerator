@@ -1,0 +1,265 @@
+myData = {
+    "Between_Rounds": [
+        "Now try these!"
+    ], 
+    "Choices_per_round": 4, 
+    "Description": "A classic Hark the Sound guessing game.", 
+    "Name": "Name that animal", 
+    "Pair_answers_with_prompts": false, 
+    "Question": [
+        "Sounds/Misc/Name that animal_Question", 
+        "Sounds/Misc/Name that animal_Question_2", 
+        "Sounds/Misc/Name that animal_Question_3"
+    ], 
+    "Repeat_rounds": false, 
+    "Things": [
+        {
+            "Answer": [
+                "American Robin"
+            ], 
+            "Hint": [
+                "When we first see this bird we know that spring is near."
+            ], 
+            "Name": "American Robin", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/American Robin"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Barred Owl"
+            ], 
+            "Hint": [
+                "This bird sleeps in the day and is awake at night."
+            ], 
+            "Name": "Barred Owl", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Barred Owl"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Canary"
+            ], 
+            "Hint": [
+                "This feathered creature is singing."
+            ], 
+            "Name": "Canary", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Canary"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Cat"
+            ], 
+            "Hint": [
+                "This soft, fuzzy pet is meowing."
+            ], 
+            "Name": "Cat", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Cat_1", 
+                "Sounds/Animals/Cat_2"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Cow"
+            ], 
+            "Hint": [
+                "This large farm animal gives us milk."
+            ], 
+            "Name": "Cow", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Cow"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Crow"
+            ], 
+            "Hint": [
+                "This is a big black bird."
+            ], 
+            "Name": "Crow", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Crow"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Dog"
+            ], 
+            "Hint": [
+                "This fuzzy pet is barking."
+            ], 
+            "Name": "Dog", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Dog_1", 
+                "Sounds/Animals/Dog_2", 
+                "Sounds/Animals/Dog_3"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Duck"
+            ], 
+            "Hint": [], 
+            "Name": "Duck", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Duck"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Elephant"
+            ], 
+            "Hint": [
+                "This giant grey animal has a long nose.\n"
+            ], 
+            "Name": "Elephant", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Elephant"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Frog"
+            ], 
+            "Hint": [
+                "This animal hops."
+            ], 
+            "Name": "Frog", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Frog_1"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Goat"
+            ], 
+            "Hint": [
+                "These animals are sometimes called \"Billy\"."
+            ], 
+            "Name": "Goat", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Goat"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Horse"
+            ], 
+            "Hint": [
+                "This big animal could give you a ride."
+            ], 
+            "Name": "Horse", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Horse"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Lion"
+            ], 
+            "Hint": [
+                "This animal is called the king of the jungle."
+            ], 
+            "Name": "Lion", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Lion"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Pig"
+            ], 
+            "Hint": [
+                "This farm animal says \"Oink, Oink\"."
+            ], 
+            "Name": "Pig", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Pig"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Rattle Snake"
+            ], 
+            "Hint": [
+                "Watch out for this dangerous snake!"
+            ], 
+            "Name": "Rattle Snake", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Rattle Snake"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Rooster"
+            ], 
+            "Hint": [
+                "This bird crows at sunrise!"
+            ], 
+            "Name": "Rooster", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Rooster"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Sheep"
+            ], 
+            "Hint": [
+                "This soft fuzzy animal is covered with wool."
+            ], 
+            "Name": "Sheep", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Sheep_1"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Turkey"
+            ], 
+            "Hint": [
+                "This bird is gobbling."
+            ], 
+            "Name": "Turkey", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Turkey"
+            ]
+        }, 
+        {
+            "Answer": [
+                "Wolf"
+            ], 
+            "Hint": [
+                "This animal is a wild relative of the dog."
+            ], 
+            "Name": "Wolf", 
+            "Picture": [], 
+            "Prompt": [
+                "Sounds/Animals/Wolf"
+            ]
+        }
+    ]
+};

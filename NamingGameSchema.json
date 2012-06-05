@@ -1,0 +1,127 @@
+mySchema = {
+    "title":"Naming Game",
+    "description":"This form allows you to create and edit your own Naming Game.",
+    "type":"object",
+    "properties": {
+        "Name": {
+            "type":"string",
+            "description": "Enter a brief title for your game.",
+            "minItems": 1,
+            "title": "Name"
+        }, 
+        "Description": {
+            "type": "string",
+            "description": "Enter a brief description of your game.",
+            "title": "Description"
+        },
+        "Question": {
+            "type":"array",
+            "description": "Question prompts may be text to speak or a sound to play.",
+            "title": "Questions",
+            "minItems": 1,
+            "items" : {
+                "type" : "string",
+                "description" : "Enter a question.",
+                "format": "audio"
+            }
+        },
+        "Between_Rounds": {
+            "type": "array",
+            "description": "Things to say between rounds.",
+            "title":"Between Rounds",
+            "minItems": 1,
+            "default": [ "Now try these." ],
+            "items": {
+                "type":"string",
+                "description" : "Enter a sentence to put between rounds."
+            }            
+        },
+        "Choices_per_round": {
+            "type": "integer",
+            "maximum": 4,
+            "minimum": 1,
+            "default": 4,
+            "description": "Number of things to pick each round.",
+            "title": "Choices Per Round"
+        },
+        "Pair_answers_with_prompts": {
+            "type": "boolean",
+            "description": "Should answer choices be paried with prompts?",
+            "title": "Pair Answers With Prompts"
+        },
+        "Repeat_rounds": {
+            "type":"boolean",
+            "description": "Should rounds be repeated?",
+            "title": "Repeat Rounds"
+        },
+        "Things": {
+            "type": "array",
+            "description": "The game content. The 'things' that will be named.",
+            "title": "Things",
+            "format": "grid",
+            "items": {
+                "type": "object",
+                "description": "An individual thing.",
+                "title":"A Thing",
+                "properties": {
+                    "Name": {
+                        "type":"string",
+                        "description": "The name of the thing.",
+                        "title":"Name"
+                    },
+                    "Prompt": {
+                        "type":"array",
+                        "description":"Prompts",
+                        "title":"Prompts",
+                        "items": {
+                            "type":"string",
+                            "description":"Enter a name our a sound",
+                            "format": "audio"
+                        }
+                    },
+                   "Answer": {
+                        "type":"array",
+                        "description":"Specify the answer associated with this thing. The default is the same as the Name but you could play a sound here instead.",
+                        "title":"Answers",
+                        "items": {
+                            "type" : "string",
+                            "description" : "An answer",
+                            "title":"Answer",
+                            "format": "audio"
+                        }
+                    },
+                    "Hint": {
+                        "type": "array",
+                        "description": "A list of hints to help player if they miss the question the first time.",
+                        "title": "Hints",
+                        "items": {
+                            "type":"string",
+                            "description":"A hint. It Can be sound url or text.",
+                            "title":"Hint",
+                            "format": "audio"
+                        }
+                    },
+                    "Picture": {
+                        "type":"array",
+                        "description":"A list of picture data.",
+                        "title": "Pictures",
+                        "items": {
+                            "type": "object",
+                            "description":"An image url, along with its height and width.",
+                            "title":"Picture",
+                            "properties": {
+                                "url":{
+                                    "type":"string",
+                                    "description":"Image to display",
+                                    "title":"Picture",
+                                    "format": "imageMedia"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+};
